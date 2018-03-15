@@ -53,35 +53,20 @@ bool FtdiControl::getSenserData(quint16 *senserData)
     if (m_ftStatus != FT_OK) {
         return false;
     }
-//    FT_SetTimeouts(m_ftHandle, 100, 0);
+    FT_SetTimeouts(m_ftHandle, 100, 0);
     while (loopFlag)
     {
-//        FT_GetStatus(m_ftHandle, &m_RxBytes, &m_TxBytes, &m_Event);
-//        if (m_RxBytes > 0)
-//        {
-//            quint8 tmp_buf[7296];
-//            m_ftStatus = FT_Read(m_ftHandle, tmp_buf, m_RxBytes, &m_Bytereceived);
-//            if (m_ftStatus == FT_OK)
-//            {
-//                memcpy(&m_RxBuffer[currentPoint], tmp_buf, m_RxBytes);
-//                currentPoint += m_RxBytes;
-//            }
-//        }
-        quint8 tmp_buf[256];
-        m_ftStatus = FT_Read(m_ftHandle, tmp_buf, 128, &m_Bytereceived);
+        m_ftStatus = FT_Read(m_ftHandle, &m_RxBuffer[currentPoint], 128, &m_Bytereceived);
         if (m_ftStatus == FT_OK)
         {
             if (m_Bytereceived >0)
             {
-                qDebug()<< m_Bytereceived;
-                memcpy(&m_RxBuffer[currentPoint], tmp_buf, m_Bytereceived);
                 currentPoint += m_Bytereceived;
             }
             else
             {
                 error_loop++;
             }
-
         }
         else
         {
@@ -92,11 +77,12 @@ bool FtdiControl::getSenserData(quint16 *senserData)
         if (error_loop >= 10)
         {
             FT_Close(m_ftHandle);
-            qDebug() << "error";
+            qDebug() << "max loop times error";
             return false;
         }
         if (currentPoint >= 7296)
         {
+            qDebug() << currentPoint;
             loopFlag = false;
         }
     }

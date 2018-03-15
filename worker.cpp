@@ -39,14 +39,9 @@ bool Worker::runAlways()
     quint16 dts[3648];
     if (FtdiControl::Instance()->getSenserData(dts))
     {
-        qDebug() << dts;
+        qDebug() << "sometings" <<dts;
         return true;
     }
-//    else
-//    {
-//        m_acqTimer->stop();
-//        return false;
-//    }
 }
 
 //启动自动获取ccd数据

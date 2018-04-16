@@ -16,6 +16,9 @@ public:
     //bool getSenserData(QVector<quint16> *senserData);
     bool getSenserData(quint16 *senserData);
     bool sendData(QString strData);
+    bool init();
+    bool openPort();
+    bool colsePort();
 
 signals:
 
@@ -31,11 +34,8 @@ private:
     quint32 m_Event;
     quint32 m_Bytereceived;
     quint32 m_ByteWritten;
+    bool m_isOpened;
 
-//    union {
-//        quint8 origData[7296];
-//        quint16 spliData[3648];
-//    } m_RawData;
 
     explicit FtdiControl(QObject *parent = nullptr);
 

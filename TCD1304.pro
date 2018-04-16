@@ -1,3 +1,4 @@
+QT += qml
 QT += quick
 CONFIG += c++11
 QT += charts
@@ -17,7 +18,11 @@ SOURCES += main.cpp \
     ftdi/ftdicontrol.cpp \
     worker.cpp \
     services.cpp \
-    chartsource.cpp
+    chartsource.cpp \
+    controlpanelmodule.cpp \
+    filter.cpp \
+    savefile.cpp \
+    ployfit.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,9 +43,22 @@ HEADERS += \
     ftdi/ftdicontrol.h \
     worker.h \
     services.h \
-    chartsource.h
+    chartsource.h \
+    controlpanelmodule.h \
+    filter.h \
+    savefile.h \
+    ployfit.h
 
+# include for ftdi
 macx: LIBS += -L$$PWD/ftdiDriverOSX/ -lftd2xx.1.4.4
 
 INCLUDEPATH += $$PWD/ftdiDriverOSX
 DEPENDPATH += $$PWD/ftdiDriverOSX
+
+
+# include for GNU Scientific Library
+macx: LIBS += -L$$PWD/GSL_OSX/lib/ -lgsl.23
+macx: LIBS += -L$$PWD/GSL_OSX/lib/ -lgslcblas
+
+INCLUDEPATH += $$PWD/GSL_OSX/include/
+DEPENDPATH += $$PWD/GSL_OSX/include/

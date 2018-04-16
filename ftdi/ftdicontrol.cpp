@@ -44,45 +44,39 @@ void FtdiControl::printDevicesInfo()
 
 bool FtdiControl::getSenserData(quint16 *senserData)
 {
+    if (! m_isOpened)
+    {
+        openPort();
+    }
+
     bool loopFlag = true;
     quint16 currentPoint = 0;
     quint8 error_loop = 0;
 
-    qDebug() << "Start:" << QTime::currentTime();
-    m_ftStatus = FT_Open(0, &m_ftHandle);
-    if (m_ftStatus != FT_OK) {
-        return false;
-    }
-    FT_SetTimeouts(m_ftHandle, 100, 0);
+    //qDebug() << "Start:" << QTime::currentTime();
+
+    FT_SetTimeouts(m_ftHandle,100,0);
     while (loopFlag)
     {
-        m_ftStatus = FT_Read(m_ftHandle, &m_RxBuffer[currentPoint], 128, &m_Bytereceived);
-        if (m_ftStatus == FT_OK)
+        m_ftStatus = FT_Read(m_ftHandle, (quint8*)(m_RxBuffer+currentPoint), 128, &m_Bytereceived);
+        if ((m_ftStatus == FT_OK) && (m_Bytereceived >0))
         {
-            if (m_Bytereceived >0)
-            {
-                currentPoint += m_Bytereceived;
-            }
-            else
-            {
-                error_loop++;
-            }
+            currentPoint += m_Bytereceived;
         }
         else
         {
-            qDebug() << "Time out";
+            qDebug() << "errors + 1";
             error_loop++;
         }
 
         if (error_loop >= 10)
         {
-            FT_Close(m_ftHandle);
             qDebug() << "max loop times error";
+            m_isOpened = false;
             return false;
         }
         if (currentPoint >= 7296)
         {
-            qDebug() << currentPoint;
             loopFlag = false;
         }
     }
@@ -93,27 +87,104 @@ bool FtdiControl::getSenserData(quint16 *senserData)
         tmpData = (m_RxBuffer[i*2] << 8) | m_RxBuffer[i*2+1];
         senserData[i] = tmpData;
     }
-
-    FT_Close(m_ftHandle);
-    qDebug() << "Stop:" << QTime::currentTime();
+    //qDebug() << "Stop:" << QTime::currentTime();
     return true;
 }
 
 bool FtdiControl::sendData(QString strData)
 {
+    if (! m_isOpened)
+    {
+        openPort();
+    }
     memset(m_TxBuffer, 0, sizeof(m_TxBuffer));
     for (quint16 i = 0; i < strData.size(); i++) {
         m_TxBuffer[i] = strData.toStdString()[i];
     }
-    m_ftStatus = FT_Open(0, &m_ftHandle);
-    if (m_ftStatus != FT_OK) {
-        return false;
-    }
     m_ftStatus = FT_Write(m_ftHandle, m_TxBuffer, strData.size(), &m_ByteWritten);
     if (m_ftStatus == FT_OK) {
-        FT_Close(m_ftHandle);
         return true;
     }
-    FT_Close(m_ftHandle);
     return false;
+}
+
+bool FtdiControl::init()
+{
+//    m_ftStatus = FT_Open(0, &m_ftHandle);
+//    if (m_ftStatus != FT_OK) {
+//        qDebug()<< "ftdi init error 1";
+//        return false;
+//    }
+    m_ftStatus = FT_ResetDevice(m_ftHandle);
+    if (m_ftStatus != FT_OK) {
+        qDebug()<< "ftdi init error 2";
+        return false;
+    }
+    m_ftStatus = FT_SetBaudRate(m_ftHandle, FT_BAUD_921600);
+    if (m_ftStatus != FT_OK) {
+        qDebug()<< "ftdi init error 3";
+        return false;
+    }
+    m_ftStatus = FT_SetDataCharacteristics(m_ftHandle, FT_BITS_8 + FT_BITS_7, FT_STOP_BITS_1, FT_PARITY_NONE);
+    if (m_ftStatus != FT_OK) {
+        qDebug()<< "ftdi init error 4";
+        return false;
+    }
+    m_ftStatus = FT_SetFlowControl(m_ftHandle, FT_FLOW_NONE, 0, 0);
+    if (m_ftStatus != FT_OK) {
+        qDebug()<< "ftdi init error 5";
+        return false;
+    }
+    m_ftStatus = FT_SetTimeouts(m_ftHandle, FT_DEFAULT_RX_TIMEOUT, FT_DEFAULT_TX_TIMEOUT);
+    if (m_ftStatus != FT_OK) {
+        qDebug()<< "ftdi init error 7";
+        return false;
+    }
+    m_ftStatus = FT_Purge(m_ftHandle, FT_PURGE_TX | FT_PURGE_RX);
+    if (m_ftStatus != FT_OK) {
+        qDebug()<< "ftdi init error 8";
+        return false;
+    }
+    qDebug()<< "ftdi init successful";
+    return true;
+}
+
+bool FtdiControl::openPort()
+{
+    FT_Close(&m_ftHandle);
+    m_isOpened = false;
+
+    m_ftStatus = FT_Open(0, &m_ftHandle);
+    if (m_ftStatus != FT_OK) {
+        m_isOpened = false;
+
+//        FT_ResetPort(m_ftHandle);
+//        m_ftStatus = FT_Open(0, &m_ftHandle);
+//        if (m_ftStatus != FT_OK)
+//        {
+//            qDebug() << "openfailed";
+//            return false;
+//        }
+//        else {
+//            m_isOpened = true;
+//            init();
+//            return true;
+//        }
+
+        qDebug() << "openfailed";
+        return false;
+    }
+    else
+    {
+        m_isOpened = true;
+        init();
+        return true;
+    }
+}
+
+bool FtdiControl::colsePort()
+{
+    m_isOpened = false;
+    FT_Close(m_ftHandle);
+    return true;
 }

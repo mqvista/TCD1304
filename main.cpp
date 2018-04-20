@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     ControlPanelModule controlPanelModule;
     engine.rootContext()->setContextProperty("ControlPanelModule", &controlPanelModule);
     QObject::connect(Worker::Instance(), &Worker::sendMeasureLength, &controlPanelModule, &ControlPanelModule::setMeasureLength);
+    QObject::connect(Worker::Instance(), &Worker::sendPolyValue, &controlPanelModule, &ControlPanelModule::setPolyValue);
 
     //
     //PloyFit ployFit;

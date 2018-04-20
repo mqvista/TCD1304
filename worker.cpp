@@ -1,6 +1,6 @@
 #include "worker.h"
 
-Worker::Worker(QObject *parent) : QObject(parent), filter(10)
+Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilterWithoutPloy(20)
 {
     m_ThresholdValue = 25000;
     m_NeedToSetParams = false;
@@ -81,7 +81,7 @@ void Worker::getLeftRight(quint16 minCutValue, quint16 maxCutValue, quint16 *lef
 {
     bool startFlagA = true, startFlagB = true, stopFlagA = true, stopFlagB = true;
     quint16 tmpBvalue;
-    for (quint16 i=0; i<1824; i++)
+    for (quint16 i=0; i<3648; i++)
     {
         if((m_SenserData[i] <= maxCutValue) && startFlagA)
         {
@@ -99,7 +99,7 @@ void Worker::getLeftRight(quint16 minCutValue, quint16 maxCutValue, quint16 *lef
             tmpBvalue = 3647-i;
             startFlagB = false;
         }
-        if((m_SenserData[3747-i] <= minCutValue) && stopFlagB)
+        if((m_SenserData[3647-i] <= minCutValue) && stopFlagB)
         {
             *rightOffset = 3647-i;
             *rightLength = tmpBvalue - *rightOffset;
@@ -109,6 +109,13 @@ void Worker::getLeftRight(quint16 minCutValue, quint16 maxCutValue, quint16 *lef
         {
             break;
         }
+    }
+    if (*leftLength >= 50 || *rightLength >=50)
+    {
+        *leftOffset = 0;
+        *leftLength = 0;
+        *rightOffset = 0;
+        *rightLength = 0;
     }
 }
 
@@ -167,24 +174,62 @@ bool Worker::runAlways()
     {
         //填充CCD 激光照射不到的数据
         fillHeadTail(600, 48000);
+        //像素滑动平均
+        filter.get(m_SenserData);
         //先做二值化
         thresholding(m_ThresholdValue, 10000, 20000);
         //取截距
         calcuLength();
         //取出来的数值做滤波
-        m_MeasureLength = filter.get(m_MeasureLength);
+        m_MeasureLength = lengthFilterWithoutPloy.Get(m_MeasureLength);
 
+
+
+
+        ///////////
         //测试用拟合
-
         quint16 leftOffset, leftLength, rightOffset, rightLength;
-        getLeftRight(12500, 40000, &leftOffset, &leftLength, &rightOffset, &rightLength );
-        qDebug()<<"leftOffset:" << leftOffset;
-        qDebug()<<"leftLength:" << leftLength;
-        qDebug()<<"rightOffset:" << rightOffset;
-        qDebug()<<"rightLength:" << rightLength;
+        //获取左右两边的数据
+        getLeftRight(20000, 40000, &leftOffset, &leftLength, &rightOffset, &rightLength);
 
-        //ployFit.calc(m_SenserData, 3648, 5);
-        //
+        qDebug()<<"①leftOffset"<<leftOffset;
+        qDebug()<<"②leftLength"<<leftLength;
+        qDebug()<<"③rightOffset"<<rightOffset;
+        qDebug()<<"④rightLength"<<rightLength;
+
+
+        quint16 dataAX[leftLength];
+        quint16 dataBX[rightLength];
+        for(quint16 i=0; i<leftLength; i++)
+        {
+            dataAX[i] = leftOffset+i+1;
+        }
+        for(quint16 i=0; i<rightLength; i++)
+        {
+            dataBX[i] = rightOffset+i+1;
+        }
+        //二乘法多项式拟合（2项）
+        //申请两个数组，存放拟合结果数据
+        double tmpLeftValue[3], tmpRightValue[3];
+        double calcLeft=0, calcRight=0;
+        double calcPolyLength=0;
+        if(leftLength != 0 && rightLength != 0)
+        {
+            //执行拟合
+            //qDebug()<<"A"<<QTime::currentTime();
+            ployFit.calc(m_SenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
+            ployFit.calc(m_SenserData+rightOffset, dataBX, rightLength, 3, tmpRightValue);
+            //拟合好后把阈值带入求解
+            calcLeft =  ployFit.slove(tmpLeftValue[2], tmpLeftValue[1], tmpLeftValue[0], m_ThresholdValue);
+            calcRight = ployFit.slove(tmpRightValue[2], tmpRightValue[1], tmpRightValue[0], m_ThresholdValue);
+            //qDebug()<<"B"<<QTime::currentTime();
+        }
+
+        calcPolyLength = calcRight-calcLeft;
+        calcPolyLength = uWindowFilter.Get(calcPolyLength);
+        //qDebug()<<"C"<<QTime::currentTime();
+        emit sendPolyValue(QString::number(calcPolyLength, 'f', 4));
+        ///////////
         emit getNewData(m_SenserData, m_SenserThresholdData, 3648);
         emit sendMeasureLength(m_MeasureLength);
         return true;

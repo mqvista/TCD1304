@@ -47,7 +47,8 @@ HEADERS += \
     controlpanelmodule.h \
     filter.h \
     savefile.h \
-    ployfit.h
+    ployfit.h \
+    windowfilter.h
 
 # include for ftdi
 macx: LIBS += -L$$PWD/ftdiDriverOSX/ -lftd2xx.1.4.4

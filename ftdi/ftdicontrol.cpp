@@ -156,21 +156,10 @@ bool FtdiControl::openPort()
 
     m_ftStatus = FT_Open(0, &m_ftHandle);
     if (m_ftStatus != FT_OK) {
-        m_isOpened = false;
+        //FT_Close(&m_ftHandle);
+        //m_isOpened = false;
 
-//        FT_ResetPort(m_ftHandle);
-//        m_ftStatus = FT_Open(0, &m_ftHandle);
-//        if (m_ftStatus != FT_OK)
-//        {
-//            qDebug() << "openfailed";
-//            return false;
-//        }
-//        else {
-//            m_isOpened = true;
-//            init();
-//            return true;
-//        }
-
+        qDebug()<< m_ftStatus;
         qDebug() << "openfailed";
         return false;
     }

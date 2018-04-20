@@ -17,7 +17,8 @@ class PloyFit : public QObject
 public:
     explicit PloyFit(QObject *parent = nullptr);
     void test();
-    void calc(quint16 *senserData, quint16 dataLength, quint8 polyN);
+    void calc(quint16 *dataX, quint16 *dataY, quint16 dataLength, quint8 polyN, double *value);
+    double slove(double a, double b, double c, double x);
 
 signals:
 

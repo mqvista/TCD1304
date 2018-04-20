@@ -9,6 +9,7 @@
 #include "filter.h"
 #include "savefile.h"
 #include "ployfit.h"
+#include "windowfilter.h"
 
 class Worker : public QObject
 {
@@ -35,6 +36,7 @@ public:
 signals:
     void getNewData(quint16 *dts0, quint16 *dts1, quint16 length);
     void sendMeasureLength(quint16 length);
+    void sendPolyValue(QString value);
 
 private:
     explicit Worker(QObject *parent = nullptr);
@@ -44,6 +46,9 @@ private:
     quint16 m_ThresholdValue;
     quint16 m_MeasureLength;
     Filter filter;
+    UWindowFilter<double> uWindowFilter;
+    UWindowFilter<quint32> lengthFilterWithoutPloy;
+
     SaveFile saveFile;
     PloyFit ployFit;
 

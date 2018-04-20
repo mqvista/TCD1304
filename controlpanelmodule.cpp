@@ -43,9 +43,20 @@ void ControlPanelModule::saveData(QString dataUrl)
     QMetaObject::invokeMethod(Worker::Instance(), "saveRawData", Qt::QueuedConnection, Q_ARG(QString, dataUrl));
 }
 
+void ControlPanelModule::setPolyValue(QString value)
+{
+    m_polyValue = value;
+    emit polyValueChanged();
+}
+
 QString ControlPanelModule::getRealLength()
 {
     return m_RealLength;
+}
+
+QString ControlPanelModule::getPolyValue()
+{
+    return m_polyValue;
 }
 
 

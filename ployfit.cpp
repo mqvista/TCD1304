@@ -11,7 +11,7 @@ void PloyFit::test()
 
 }
 
-void PloyFit::calc(quint16 *senserData, quint16 dataLength, quint8 polyN)
+void PloyFit::calc(quint16 *dataX, quint16 *dataY, quint16 dataLength, quint8 polyN, double *value)
 {
     //先准备参数
     //准备 gsl_mutifit_liner 参数 X, y, c
@@ -29,10 +29,10 @@ void PloyFit::calc(quint16 *senserData, quint16 dataLength, quint8 polyN)
     for(quint16 i=0; i<dataLength; i++)
     {
         gsl_matrix_set(X, i, 0, 1.0);
-        gsl_vector_set(y, i, senserData[i]);
+        gsl_vector_set(y, i, dataY[i]);
         for(quint8 j = 1; j< polyN; j++)
         {
-            gsl_matrix_set(X, i, j, pow(i ,j));
+            gsl_matrix_set(X, i, j, pow(dataX[i] ,j));
         }
     }
     //准备工作空间, 参数一为数据长度， 二为拟合次数
@@ -43,8 +43,10 @@ void PloyFit::calc(quint16 *senserData, quint16 dataLength, quint8 polyN)
     double Q = gsl_cdf_chisq_Q(chisq/2.0, (dataLength-2)/2.0);
 
     //输出
+
     for(quint8 i=0; i<polyN; i++)
     {
+        value[i] = c->data[i];
         qDebug()<< "Num" << i << "==" << c->data[i];
     }
     qDebug() << "Chisqp:" << chisq;
@@ -56,4 +58,9 @@ void PloyFit::calc(quint16 *senserData, quint16 dataLength, quint8 polyN)
     gsl_vector_free(y);
     gsl_vector_free(c);
     gsl_matrix_free(cov);
+}
+
+double PloyFit::slove(double a, double b, double c, double x)
+{
+    return a * pow(x, 2) + b * x + c;
 }

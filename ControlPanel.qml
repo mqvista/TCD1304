@@ -5,15 +5,15 @@ import QtQuick.Dialogs 1.2
 Item {
     id: item1
     width: 1050
-    height: 100
+    height: 150
 
     Text {
         id: name0
         text: qsTr("Intergral:")
         font.pointSize: 30
-        anchors.horizontalCenterOffset: -230
+        anchors.horizontalCenterOffset: -231
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -20
+        anchors.verticalCenterOffset: -33
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -36,7 +36,7 @@ Item {
     Text {
         id: name
         text: qsTr("Threshold:")
-        anchors.verticalCenterOffset: -20
+        anchors.verticalCenterOffset: -33
         font.pointSize: 30
         anchors.horizontalCenterOffset: 100
         anchors.verticalCenter: parent.verticalCenter
@@ -60,7 +60,7 @@ Item {
     Text {
         id: name1
         text: qsTr("Count:")
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenterOffset: 20
         font.pointSize: 30
         anchors.horizontalCenterOffset: -245
         anchors.verticalCenter: parent.verticalCenter
@@ -70,8 +70,7 @@ Item {
     Label {
         id: label
         text: ControlPanelModule.measureLength
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenter: name1.verticalCenter
         anchors.left: name1.right
         anchors.leftMargin: 5
         font.pointSize: 30
@@ -84,7 +83,7 @@ Item {
         anchors.horizontalCenterOffset: 72
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenterOffset: 20
     }
 
     Text {
@@ -92,8 +91,7 @@ Item {
         text: qsTr("*")
         font.pointSize: 30
         anchors.leftMargin: 10
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenter: name2.verticalCenter
         anchors.left: name2.right
     }
 
@@ -104,10 +102,9 @@ Item {
         text: qsTr("1")
         font.pointSize: 25
         font.family: "Tahoma"
-        anchors.left: name3.right
-        anchors.leftMargin: 10
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.left: name2.right
+        anchors.leftMargin: 32
+        anchors.verticalCenter: name2.verticalCenter
     }
 
     Text {
@@ -115,32 +112,50 @@ Item {
         text: qsTr("=")
         font.pointSize: 30
         anchors.leftMargin: 10
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenter: textField.verticalCenter
         anchors.left: textField.right
     }
 
     Label {
         id: label2
         text: ControlPanelModule.realLength
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenter: name4.verticalCenter
         anchors.left: name4.left
         anchors.leftMargin: 20
         font.pointSize: 30
     }
 
+    Text {
+        id: name5
+        text: qsTr("calc:")
+        font.pointSize: 30
+        anchors.horizontalCenterOffset: 72
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenterOffset: 60
+    }
+
+    Label {
+        id: label3
+        text: ControlPanelModule.polyValue
+        anchors.verticalCenter: name5.verticalCenter
+        anchors.left: name5.left
+        anchors.leftMargin: 70
+        font.pointSize: 30
+    }
+
+
+
     Button {
         id: button
         width: 150
         text: qsTr("Close")
+        anchors.right: name1.left
+        anchors.rightMargin: 37
         font.pointSize: 30
         focusPolicy: Qt.NoFocus
         opacity: 0.8
-        anchors.left: parent.left
-        anchors.leftMargin: 50
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 35
+        anchors.verticalCenter: name1.verticalCenter
         onClicked: {
             ControlPanelModule.closeDevice()
             Qt.quit()
@@ -151,13 +166,12 @@ Item {
         id: saveButton
         width: 150
         text: qsTr("save RAW")
-        anchors.verticalCenterOffset: -20
+        anchors.right: name0.left
+        anchors.rightMargin: 37
         font.pointSize: 30
         focusPolicy: Qt.NoFocus
         opacity: 0.8
-        anchors.left: parent.left
-        anchors.leftMargin: 50
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: name0.verticalCenter
         onClicked: {
             fileDialog.visible = true
 

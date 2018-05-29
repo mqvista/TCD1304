@@ -52,6 +52,7 @@ HEADERS += \
 
 # include for ftdi
 macx: LIBS += -L$$PWD/D2XX/mac/ -lftd2xx.1.4.4
+win32: LIBS += -L$$PWD/D2XX/win32/ -lftd2xx
 
 INCLUDEPATH += $$PWD/D2XX/include/
 DEPENDPATH += $$PWD/D2XX/include/
@@ -63,3 +64,4 @@ macx: LIBS += -L$$PWD/GSL_OSX/lib/ -lgslcblas
 
 INCLUDEPATH += $$PWD/GSL_OSX/include/
 DEPENDPATH += $$PWD/GSL_OSX/include/
+

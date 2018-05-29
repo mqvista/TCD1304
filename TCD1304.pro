@@ -59,9 +59,9 @@ DEPENDPATH += $$PWD/D2XX/include/
 
 
 # include for GNU Scientific Library
-macx: LIBS += -L$$PWD/GSL_OSX/lib/ -lgsl.23
-macx: LIBS += -L$$PWD/GSL_OSX/lib/ -lgslcblas
+macx: LIBS += -L$$PWD/GSL/mac/lib/ -lgsl.23
+macx: LIBS += -L$$PWD/GSL/mac/lib/ -lgslcblas
 
-INCLUDEPATH += $$PWD/GSL_OSX/include/
-DEPENDPATH += $$PWD/GSL_OSX/include/
+INCLUDEPATH += $$PWD/GSL/include/
+DEPENDPATH += $$PWD/GSL/include/
 

@@ -11,7 +11,8 @@ class Filter : public QObject
 public:
     explicit Filter(QObject *parent = nullptr);
     ~Filter();
-    void get(quint16* value);
+    //void get(quint16* value);
+    void get(quint16* originalValue, quint16* filterValue);
 
 signals:
 

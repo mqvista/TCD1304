@@ -43,6 +43,16 @@ QString Worker::converyIntergralData()
     return intValueStr;
 }
 
+//填充首尾激光无法照射的区域， 参数一 长度， 参数二 数值（建议48000）
+void Worker::fillHeadTail(quint16 length, quint16 value)
+{
+    for(quint16 i=0; i<length; i++)
+    {
+        m_OriginalSenserData[i] = value;
+        m_OriginalSenserData[3647-i] = value;
+    }
+}
+
 //循环数组，并从左右两边向内靠拢
 //用于计算触发的CCD长度
 void Worker::calcuLength()
@@ -67,39 +77,35 @@ void Worker::calcuLength()
     m_MeasureLength = endPoint-startPoint;
 }
 
-//填充首尾激光无法照射的区域， 参数一 长度， 参数二 数值（建议48000）
-void Worker::fillHeadTail(quint16 length, quint16 value)
-{
-    for(quint16 i=0; i<length; i++)
-    {
-        m_SenserData[i] = value;
-        m_SenserData[3647-i] = value;
-    }
-}
 
-void Worker::getLeftRight(quint16 minCutValue, quint16 maxCutValue, quint16 *leftOffset, quint16 *leftLength, quint16 *rightOffset, quint16 *rightLength)
+// 获取左右两边的数据，比较陡的左右两个边沿
+// 为了后面做拟合使用，取值一个范围
+// 参数一 范围的最小值
+// 参数二 范围的最大值
+// 参数三 指针参数，为了把数据丢出来
+void Worker::getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxCutValue, quint16 *leftOffset, quint16 *leftLength, quint16 *rightOffset, quint16 *rightLength)
 {
     bool startFlagA = true, startFlagB = true, stopFlagA = true, stopFlagB = true;
     quint16 tmpBvalue;
     for (quint16 i=0; i<3648; i++)
     {
-        if((m_SenserData[i] <= maxCutValue) && startFlagA)
+        if((senserData[i] <= maxCutValue) && startFlagA)
         {
             *leftOffset = i;
             startFlagA = false;
         }
-        if((m_SenserData[i] <= minCutValue) && stopFlagA)
+        if((senserData[i] <= minCutValue) && stopFlagA)
         {
             *leftLength = i - *leftOffset;
             stopFlagA = false;
         }
-        if((m_SenserData[3647-i] <= maxCutValue) && startFlagB)
+        if((senserData[3647-i] <= maxCutValue) && startFlagB)
         {
             //从尾到头数， 先取得尾部的maxValue；
             tmpBvalue = 3647-i;
             startFlagB = false;
         }
-        if((m_SenserData[3647-i] <= minCutValue) && stopFlagB)
+        if((senserData[3647-i] <= minCutValue) && stopFlagB)
         {
             *rightOffset = 3647-i;
             *rightLength = tmpBvalue - *rightOffset;
@@ -170,17 +176,17 @@ bool Worker::runAlways()
 
     FtdiControl::Instance()->sendData("#?data%");
     //判断数据是否采集回来
-    if (FtdiControl::Instance()->getSenserData(m_SenserData))
+    if (FtdiControl::Instance()->getSenserData(m_OriginalSenserData))
     {
         //填充CCD 激光照射不到的数据
         fillHeadTail(600, 48000);
         //像素滑动平均
-        filter.get(m_SenserData);
+        filter.get(m_OriginalSenserData, m_FilterSenserData);
         //先做二值化
         thresholding(m_ThresholdValue, 10000, 20000);
         //取截距
         calcuLength();
-        //取出来的数值做滤波
+        //取出来的数值做滤波（直接取截距的测量）
         m_MeasureLength = lengthFilterWithoutPloy.Get(m_MeasureLength);
 
 
@@ -190,14 +196,14 @@ bool Worker::runAlways()
         //测试用拟合
         quint16 leftOffset, leftLength, rightOffset, rightLength;
         //获取左右两边的数据
-        getLeftRight(20000, 40000, &leftOffset, &leftLength, &rightOffset, &rightLength);
+        getLeftRight(m_FilterSenserData, 20000, 40000, &leftOffset, &leftLength, &rightOffset, &rightLength);
 
         qDebug()<<"①leftOffset"<<leftOffset;
         qDebug()<<"②leftLength"<<leftLength;
         qDebug()<<"③rightOffset"<<rightOffset;
         qDebug()<<"④rightLength"<<rightLength;
 
-
+        // 计算出X的数据
         quint16 dataAX[leftLength];
         quint16 dataBX[rightLength];
         for(quint16 i=0; i<leftLength; i++)
@@ -208,41 +214,46 @@ bool Worker::runAlways()
         {
             dataBX[i] = rightOffset+i+1;
         }
-        //二乘法多项式拟合（2项）
-        //申请两个数组，存放拟合结果数据
+        // 二乘法多项式拟合（2项）
+        // 申请两个数组，存放拟合结果数据
         double tmpLeftValue[3], tmpRightValue[3];
         double calcLeft=0, calcRight=0;
         double calcPolyLength=0;
+        // 判断是否是垃圾数据
+        // 是的话就不进行拟合
         if(leftLength != 0 && rightLength != 0)
         {
             //执行拟合
-            //qDebug()<<"A"<<QTime::currentTime();
-            ployFit.calc(m_SenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
-            ployFit.calc(m_SenserData+rightOffset, dataBX, rightLength, 3, tmpRightValue);
-            //拟合好后把阈值带入求解
+            ployFit.calc(m_FilterSenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
+            ployFit.calc(m_FilterSenserData+rightOffset, dataBX, rightLength, 3, tmpRightValue);
+
+            //拟合好后把阈值带入求解;
             calcLeft =  ployFit.slove(tmpLeftValue[2], tmpLeftValue[1], tmpLeftValue[0], m_ThresholdValue);
             calcRight = ployFit.slove(tmpRightValue[2], tmpRightValue[1], tmpRightValue[0], m_ThresholdValue);
-            //qDebug()<<"B"<<QTime::currentTime();
+            //qDebug() << "CalcLeft" <<calcLeft;
+            //qDebug() << "CalcRight" <<calcRight;
         }
 
+        // 因为拟合的是左右两个边，所以需要相减求出大小
         calcPolyLength = calcRight-calcLeft;
+        // 窗口滤波
         calcPolyLength = uWindowFilter.Get(calcPolyLength);
-        //qDebug()<<"C"<<QTime::currentTime();
+
+        // 丢给界面处理过后的数据
         emit sendPolyValue(QString::number(calcPolyLength, 'f', 4));
-        ///////////
-        emit getNewData(m_SenserData, m_SenserThresholdData, 3648);
+        emit getNewData(m_FilterSenserData, m_SenserThresholdData, 3648);
         emit sendMeasureLength(m_MeasureLength);
         return true;
     }
     return false;
 }
 
-//二值化处理，threshold为二值化的阈值，min和max是二值化的高和低的数值，其实没啥大用
+//二值化处理，threshold为二值化的阈值，min和max是二值化的高和低的数值，其实没啥大用，就是显示给界面用
 void Worker::thresholding(quint16 threshold, quint16 min, quint16 max)
 {
     for (quint16 i=0; i<3648; i++)
     {
-        if(m_SenserData[i] >= threshold)
+        if(m_FilterSenserData[i] >= threshold)
         {
             m_SenserThresholdData[i] = max;
         }
@@ -279,7 +290,8 @@ bool Worker::sendData(QString strData)
 
 void Worker::saveRawData(QString dataUrl)
 {
-    saveFile.saveCurrentData(m_SenserData, 3648 ,dataUrl);
+    //saveFile.saveCurrentData(m_FilterSenserData, 3648 ,dataUrl);
+    saveFile.saveAllData(m_OriginalSenserData, m_FilterSenserData, 3648, dataUrl);
 }
 
 

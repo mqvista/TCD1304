@@ -46,7 +46,9 @@ bool FtdiControl::getSenserData(quint16 *senserData)
 {
     if (! m_isOpened)
     {
-        openPort();
+        if (!openPort())
+            return false;
+        //openPort();
     }
 
     bool loopFlag = true;
@@ -110,11 +112,6 @@ bool FtdiControl::sendData(QString strData)
 
 bool FtdiControl::init()
 {
-//    m_ftStatus = FT_Open(0, &m_ftHandle);
-//    if (m_ftStatus != FT_OK) {
-//        qDebug()<< "ftdi init error 1";
-//        return false;
-//    }
     m_ftStatus = FT_ResetDevice(m_ftHandle);
     if (m_ftStatus != FT_OK) {
         qDebug()<< "ftdi init error 2";
@@ -155,12 +152,11 @@ bool FtdiControl::openPort()
     m_isOpened = false;
 
     m_ftStatus = FT_Open(0, &m_ftHandle);
-    if (m_ftStatus != FT_OK) {
-        //FT_Close(&m_ftHandle);
-        //m_isOpened = false;
-
+    if (m_ftStatus != FT_OK)
+    {
         qDebug()<< m_ftStatus;
         qDebug() << "openfailed";
+        FT_ResetDevice(m_ftHandle);
         return false;
     }
     else

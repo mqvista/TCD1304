@@ -31,7 +31,7 @@ public:
     QString converyIntergralData();
     void calcuLength();
     void fillHeadTail(quint16 length, quint16 value);
-    void getLeftRight(quint16 minCutValue, quint16 maxCutValue, quint16* leftOffset, quint16* leftLength, quint16* rightOffset, quint16* rightLength);
+    void getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxCutValue, quint16* leftOffset, quint16* leftLength, quint16* rightOffset, quint16* rightLength);
 
 signals:
     void getNewData(quint16 *dts0, quint16 *dts1, quint16 length);
@@ -41,7 +41,10 @@ signals:
 private:
     explicit Worker(QObject *parent = nullptr);
     QTimer *m_acqTimer;
-    quint16 m_SenserData[3648];
+
+    quint16 m_OriginalSenserData[3648];
+    quint16 m_FilterSenserData[3648];
+    //quint16 m_SenserData[3648];
     quint16 m_SenserThresholdData[3648];
     quint16 m_ThresholdValue;
     quint16 m_MeasureLength;

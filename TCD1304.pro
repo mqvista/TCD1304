@@ -51,10 +51,10 @@ HEADERS += \
     windowfilter.h
 
 # include for ftdi
-macx: LIBS += -L$$PWD/ftdiDriverOSX/ -lftd2xx.1.4.4
+macx: LIBS += -L$$PWD/D2XX/mac/ -lftd2xx.1.4.4
 
-INCLUDEPATH += $$PWD/ftdiDriverOSX
-DEPENDPATH += $$PWD/ftdiDriverOSX
+INCLUDEPATH += $$PWD/D2XX/include/
+DEPENDPATH += $$PWD/D2XX/include/
 
 
 # include for GNU Scientific Library

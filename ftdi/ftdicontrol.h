@@ -33,7 +33,8 @@ private:
     quint8 m_RxBuffer[7300];
     quint8 m_TxBuffer[128];
     quint32 m_Event;
-    quint32 m_Bytereceived;
+    //quint32 m_Bytereceived;
+    DWORD m_Bytereceived;
     quint32 m_ByteWritten;
     bool m_isOpened;
 

@@ -35,7 +35,8 @@ private:
     quint32 m_Event;
     //quint32 m_Bytereceived;
     DWORD m_Bytereceived;
-    quint32 m_ByteWritten;
+//    quint32 m_ByteWritten;
+    DWORD m_ByteWritten;
     bool m_isOpened;
 
 

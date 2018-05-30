@@ -26,7 +26,8 @@ private:
     FT_STATUS m_ftStatus;
     FT_HANDLE m_ftHandle;
     FT_DEVICE_LIST_INFO_NODE *m_devInfo;
-    quint32 m_numDevs;
+    //quint32 m_numDevs;
+    DWORD m_numDevs;
     quint32 m_RxBytes;
     quint32 m_TxBytes;
     quint8 m_RxBuffer[7300];

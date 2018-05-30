@@ -204,8 +204,8 @@ bool Worker::runAlways()
         qDebug()<<"④rightLength"<<rightLength;
 
         // 计算出X的数据
-        quint16 dataAX[leftLength];
-        quint16 dataBX[rightLength];
+        quint16 *dataAX = new quint16[leftLength];
+        quint16 *dataBX = new quint16[rightLength];
         for(quint16 i=0; i<leftLength; i++)
         {
             dataAX[i] = leftOffset+i+1;

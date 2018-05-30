@@ -52,15 +52,25 @@ HEADERS += \
 
 # include for ftdi
 macx: LIBS += -L$$PWD/D2XX/mac/ -lftd2xx.1.4.4
-win32: LIBS += -L$$PWD/D2XX/win32/ -lftd2xx
+contains(QT_ARCH, i386) {
+    message("32-bit")
+    LIBS += -L$$PWD/D2XX/win32/ -lftd2xx
+}else {
+    message("64-bit")
+    LIBS += -L$$PWD/D2XX/win64/ -lftd2xx
+}
 
 INCLUDEPATH += $$PWD/D2XX/include/
 DEPENDPATH += $$PWD/D2XX/include/
 
 
+
+
 # include for GNU Scientific Library
 macx: LIBS += -L$$PWD/GSL/mac/lib/ -lgsl.23
 macx: LIBS += -L$$PWD/GSL/mac/lib/ -lgslcblas
+win32: LIBS += -L$$PWD/GSL/win/lib/ -lgsl
+win32: LIBS += -L$$PWD/GSL/win/lib/ -lgslcblas
 
 INCLUDEPATH += $$PWD/GSL/include/
 DEPENDPATH += $$PWD/GSL/include/

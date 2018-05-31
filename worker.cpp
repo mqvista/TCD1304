@@ -4,6 +4,7 @@ Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilt
 {
     m_ThresholdValue = 25000;
     m_NeedToSetParams = false;
+    m_saveFlag = false;
 }
 
 quint16 Worker::getThresholdValue() const
@@ -218,7 +219,7 @@ bool Worker::runAlways()
         // 申请两个数组，存放拟合结果数据
         double tmpLeftValue[3], tmpRightValue[3];
         double calcLeft=0, calcRight=0;
-        double calcPolyLength=0;
+        //double calcPolyLength=0;
         // 判断是否是垃圾数据
         // 是的话就不进行拟合
         if(leftLength != 0 && rightLength != 0)
@@ -235,12 +236,22 @@ bool Worker::runAlways()
         }
 
         // 因为拟合的是左右两个边，所以需要相减求出大小
-        calcPolyLength = calcRight-calcLeft;
+        m_calcPolyLength = calcRight-calcLeft;
         // 窗口滤波
-        calcPolyLength = uWindowFilter.Get(calcPolyLength);
+        m_calcPolyLengthFilter = uWindowFilter.Get(m_calcPolyLength);
+
+        // 保存数据
+        if (m_saveFlag)
+        {
+            m_saveFlag = false;
+            saveFile.saveAllData(m_OriginalSenserData, m_FilterSenserData,
+                                 leftLength, leftOffset, rightLength, rightOffset,
+                                 tmpLeftValue, tmpRightValue ,3648, m_saveUrl,
+                                 calcLeft, calcRight, m_calcPolyLength, m_calcPolyLengthFilter);
+        }
 
         // 丢给界面处理过后的数据
-        emit sendPolyValue(QString::number(calcPolyLength, 'f', 4));
+        emit sendPolyValue(QString::number(m_calcPolyLengthFilter, 'f', 4));
         emit getNewData(m_FilterSenserData, m_SenserThresholdData, 3648);
         emit sendMeasureLength(m_MeasureLength);
         return true;
@@ -290,8 +301,8 @@ bool Worker::sendData(QString strData)
 
 void Worker::saveRawData(QString dataUrl)
 {
-    //saveFile.saveCurrentData(m_FilterSenserData, 3648 ,dataUrl);
-    saveFile.saveAllData(m_OriginalSenserData, m_FilterSenserData, 3648, dataUrl);
+    m_saveFlag = true;
+    m_saveUrl = dataUrl;
 }
 
 

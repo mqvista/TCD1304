@@ -57,6 +57,10 @@ private:
 
     bool m_NeedToSetParams;
     quint8 m_IntergralValue;
+    bool m_saveFlag;
+    QString m_saveUrl;
+    double m_calcPolyLength;
+    double m_calcPolyLengthFilter;
 
 };
 

@@ -32,7 +32,7 @@ void PloyFit::calc(quint16 *dataX, quint16 *dataY, quint16 dataLength, quint8 po
         gsl_vector_set(y, i, dataY[i]);
         for(quint8 j = 1; j< polyN; j++)
         {
-            gsl_matrix_set(X, i, j, pow(dataX[i] ,j));
+            gsl_matrix_set(X, i, j, pow(dataX[i], j));
         }
     }
     //准备工作空间, 参数一为数据长度， 二为拟合次数

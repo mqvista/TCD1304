@@ -78,7 +78,7 @@ Item {
 
     Text {
         id: name2
-        text: qsTr("Pixels")
+        text: qsTr("Pixels:")
         font.pointSize: 30
         anchors.horizontalCenterOffset: 72
         anchors.verticalCenter: parent.verticalCenter
@@ -86,41 +86,11 @@ Item {
         anchors.verticalCenterOffset: 20
     }
 
-    Text {
-        id: name3
-        text: qsTr("*")
-        font.pointSize: 30
-        anchors.leftMargin: 10
-        anchors.verticalCenter: name2.verticalCenter
-        anchors.left: name2.right
-    }
-
-    TextField {
-        id: textField
-        width: 100
-        height: 40
-        text: qsTr("1")
-        font.pointSize: 25
-        font.family: "Tahoma"
-        anchors.left: name2.right
-        anchors.leftMargin: 32
-        anchors.verticalCenter: name2.verticalCenter
-    }
-
-    Text {
-        id: name4
-        text: qsTr("=")
-        font.pointSize: 30
-        anchors.leftMargin: 10
-        anchors.verticalCenter: textField.verticalCenter
-        anchors.left: textField.right
-    }
-
     Label {
         id: label2
         text: ControlPanelModule.realLength
-        anchors.verticalCenter: name4.verticalCenter
-        anchors.left: name4.left
+        anchors.verticalCenter: name2.verticalCenter
+        anchors.left: name2.right
         anchors.leftMargin: 20
         font.pointSize: 30
     }
@@ -150,8 +120,7 @@ Item {
         id: button
         width: 150
         text: qsTr("Close")
-        anchors.right: name1.left
-        anchors.rightMargin: 37
+        anchors.left: saveButton.left
         font.pointSize: 30
         focusPolicy: Qt.NoFocus
         opacity: 0.8

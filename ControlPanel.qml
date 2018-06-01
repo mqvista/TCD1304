@@ -20,6 +20,7 @@ Item {
     SpinBox {
         id: spinBox0
         width: 120
+        font.pointSize: 18
         editable: true
         anchors.left: name0.right
         anchors.leftMargin: 5
@@ -49,6 +50,7 @@ Item {
         anchors.left: name.right
         anchors.leftMargin: 5
         anchors.verticalCenter: name.verticalCenter
+        font.pointSize: 18
         from: 1000
         to: 70000
         value: 25000

@@ -7,6 +7,11 @@ Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilt
     m_saveFlag = false;
 }
 
+double Worker::converyToPolyRealLength(double pixelLength)
+{
+    return  0.009445 * pixelLength - 3.028;
+}
+
 quint16 Worker::getThresholdValue() const
 {
     return m_ThresholdValue;
@@ -86,6 +91,12 @@ void Worker::calcuLength()
 // 参数三 指针参数，为了把数据丢出来
 void Worker::getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxCutValue, quint16 *leftOffset, quint16 *leftLength, quint16 *rightOffset, quint16 *rightLength)
 {
+    // 清理旧的数据
+    *leftOffset = 0;
+    *leftLength = 0;
+    *rightOffset = 0;
+    *rightLength = 0;
+
     bool startFlagA = true, startFlagB = true, stopFlagA = true, stopFlagB = true;
     quint16 tmpBvalue;
     for (quint16 i=0; i<3648; i++)
@@ -180,9 +191,15 @@ bool Worker::runAlways()
     if (FtdiControl::Instance()->getSenserData(m_OriginalSenserData))
     {
         //填充CCD 激光照射不到的数据
-        fillHeadTail(600, 48000);
-        //像素滑动平均
-        filter.get(m_OriginalSenserData, m_FilterSenserData);
+        fillHeadTail(820, 48000);
+
+        #ifdef USE_ORI_FILTER
+            //像素滑动平均
+            filter.get(m_OriginalSenserData, m_FilterSenserData);
+        #else
+            std::copy(std::begin(m_OriginalSenserData), std::end(m_OriginalSenserData), std::begin(m_FilterSenserData));
+        #endif
+
         //先做二值化
         thresholding(m_ThresholdValue, 10000, 20000);
         //取截距
@@ -219,10 +236,9 @@ bool Worker::runAlways()
         // 申请两个数组，存放拟合结果数据
         double tmpLeftValue[3], tmpRightValue[3];
         double calcLeft=0, calcRight=0;
-        //double calcPolyLength=0;
         // 判断是否是垃圾数据
         // 是的话就不进行拟合
-        if(leftLength != 0 && rightLength != 0)
+        if(leftLength > 1 && rightLength >1 )
         {
             //执行拟合
             ployFit.calc(m_FilterSenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
@@ -231,14 +247,39 @@ bool Worker::runAlways()
             //拟合好后把阈值带入求解;
             calcLeft =  ployFit.slove(tmpLeftValue[2], tmpLeftValue[1], tmpLeftValue[0], m_ThresholdValue);
             calcRight = ployFit.slove(tmpRightValue[2], tmpRightValue[1], tmpRightValue[0], m_ThresholdValue);
-            //qDebug() << "CalcLeft" <<calcLeft;
-            //qDebug() << "CalcRight" <<calcRight;
         }
+        // 判断是不是到左边极限
+        if(leftLength > 1 && rightLength <= 1 && rightOffset != 0)
+        {
+            //执行拟合
+            ployFit.calc(m_FilterSenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
+            //拟合好后把阈值带入求解;
+            calcLeft =  ployFit.slove(tmpLeftValue[2], tmpLeftValue[1], tmpLeftValue[0], m_ThresholdValue);
+
+            calcRight = rightOffset;
+        }
+        // 判断是不是到右边边极限
+        if(rightLength > 1 && leftLength <= 1 && leftOffset != 0)
+        {
+            //执行拟合
+            ployFit.calc(m_FilterSenserData+rightOffset, dataBX, rightLength, 3, tmpRightValue);
+            //拟合好后把阈值带入求解;
+            calcRight = ployFit.slove(tmpRightValue[2], tmpRightValue[1], tmpRightValue[0], m_ThresholdValue);
+
+            calcLeft = leftOffset;
+        }
+
 
         // 因为拟合的是左右两个边，所以需要相减求出大小
         m_calcPolyLength = calcRight-calcLeft;
         // 窗口滤波
-        m_calcPolyLengthFilter = uWindowFilter.Get(m_calcPolyLength);
+        #ifdef USE_AFTER_FILTER
+            //m_calcPolyLengthFilter = uWindowFilter.Get(m_calcPolyLength);
+            m_calcPolyLengthFilter = m_SortingFilter.get(m_calcPolyLength);
+        #else
+            m_calcPolyLengthFilter = m_calcPolyLength;
+        #endif
+
 
         // 保存数据
         if (m_saveFlag)
@@ -250,10 +291,20 @@ bool Worker::runAlways()
                                  calcLeft, calcRight, m_calcPolyLength, m_calcPolyLengthFilter);
         }
 
-        // 丢给界面处理过后的数据
-        emit sendPolyValue(QString::number(m_calcPolyLengthFilter, 'f', 4));
-        emit getNewData(m_FilterSenserData, m_SenserThresholdData, 3648);
+        // 算实际长度
+        m_calcPoluRealLength = converyToPolyRealLength(m_calcPolyLengthFilter);
+
+        // 发送无拟合的单纯截距的数据
         emit sendMeasureLength(m_MeasureLength);
+        // 丢给界面拟合处理过后的数据
+        emit sendPolyValue(QString::number(m_calcPolyLengthFilter, 'f', 2));
+        // 丢给界面拟合处理过后的实际长度数据
+        emit sendPolyRealValue(QString::number(m_calcPoluRealLength, 'f', 4));
+        // 丢给界面波形
+        emit getNewData(m_FilterSenserData, m_SenserThresholdData, 3648);
+
+        //
+        emit SendDataToTCPClient("#PixelLength:" + QString::number(m_calcPolyLengthFilter, 'f', 2) + " #PolyRealLength:" + QString::number(m_calcPoluRealLength, 'f', 4) + "\n");
         return true;
     }
     return false;

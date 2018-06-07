@@ -4,11 +4,15 @@ Services::Services(QObject *parent) : QObject(parent)
 {
     Worker::Instance()->moveToThread(&workerThread);
     workerThread.start();
+    m_tcpServer.moveToThread(&tcpThread);
+    tcpThread.start();
+
     QMetaObject::invokeMethod(Worker::Instance(), "sendData", Qt::QueuedConnection, Q_ARG(QString, "#CCDInt:001%"));
-    //QMetaObject::invokeMethod(Worker::Instance(), "sendData", Qt::QueuedConnection, Q_ARG(QString, "#Text:0%"));
 
 
     QMetaObject::invokeMethod(Worker::Instance(), "startAutoAcq", Qt::QueuedConnection, Q_ARG(quint16, 100));
+
+    QObject::connect(Worker::Instance(), &Worker::SendDataToTCPClient, &m_tcpServer, &TCPServer::sendNewData);
 }
 
 Services::~Services()

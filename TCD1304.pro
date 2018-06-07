@@ -2,6 +2,7 @@ QT += qml
 QT += quick
 CONFIG += c++11
 QT += charts
+QT += network
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -22,7 +23,9 @@ SOURCES += main.cpp \
     controlpanelmodule.cpp \
     filter.cpp \
     savefile.cpp \
-    ployfit.cpp
+    ployfit.cpp \
+    sortingfilter.cpp \
+    tcpserver.cpp
 
 RESOURCES += qml.qrc
 
@@ -48,7 +51,10 @@ HEADERS += \
     filter.h \
     savefile.h \
     ployfit.h \
-    windowfilter.h
+    windowfilter.h \
+    config.h \
+    sortingfilter.h \
+    tcpserver.h
 
 # include for ftdi
 macx: LIBS += -L$$PWD/D2XX/mac/ -lftd2xx.1.4.4

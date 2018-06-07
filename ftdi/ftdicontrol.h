@@ -13,7 +13,6 @@ class FtdiControl : public QObject
 public:
     static FtdiControl *Instance();
     void printDevicesInfo();
-    //bool getSenserData(QVector<quint16> *senserData);
     bool getSenserData(quint16 *senserData);
     bool sendData(QString strData);
     bool init();
@@ -26,16 +25,13 @@ private:
     FT_STATUS m_ftStatus;
     FT_HANDLE m_ftHandle;
     FT_DEVICE_LIST_INFO_NODE *m_devInfo;
-    //quint32 m_numDevs;
     DWORD m_numDevs;
     quint32 m_RxBytes;
     quint32 m_TxBytes;
     quint8 m_RxBuffer[7300];
     quint8 m_TxBuffer[128];
     quint32 m_Event;
-    //quint32 m_Bytereceived;
     DWORD m_Bytereceived;
-//    quint32 m_ByteWritten;
     DWORD m_ByteWritten;
     bool m_isOpened;
 

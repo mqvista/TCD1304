@@ -80,7 +80,7 @@ Item {
 
     Text {
         id: name2
-        text: qsTr("Pixels:")
+        text: qsTr("Real Length:")
         font.pointSize: 30
         anchors.horizontalCenterOffset: 72
         anchors.verticalCenter: parent.verticalCenter
@@ -99,11 +99,11 @@ Item {
 
     Text {
         id: name5
-        text: qsTr("calc:")
+        text: qsTr("Poly Pixels:")
         font.pointSize: 30
-        anchors.horizontalCenterOffset: 72
+        anchors.left: name2.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenterOffset: 60
     }
 
@@ -111,8 +111,8 @@ Item {
         id: label3
         text: ControlPanelModule.polyValue
         anchors.verticalCenter: name5.verticalCenter
-        anchors.left: name5.left
-        anchors.leftMargin: 70
+        anchors.left: name5.right
+        anchors.leftMargin: 20
         font.pointSize: 30
     }
 

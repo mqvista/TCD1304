@@ -8,7 +8,6 @@ Window {
     width: 1024
     height: 768
     title: qsTr("TCD1304 Tester")
-//    flags:Qt.FramelessWindowHint
 
     ControlPanel {
         id: controlPanel

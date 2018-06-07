@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE void closeDevice();
     Q_INVOKABLE void saveData(QString dataUrl);
     Q_INVOKABLE void setPolyValue(QString value);
+    Q_INVOKABLE void setPolyRealValue(QString value);
     quint16 getMeasureLength();
     QString getRealLength();
     QString getPolyValue();

@@ -46,7 +46,3 @@ void ChartSource::processFromWorker(quint16 *data0, quint16 *data1, quint16 leng
     emit updateChart();
 }
 
-//void ChartSource::update(QAbstractSeries *series)
-//{
-
-//}

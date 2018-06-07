@@ -54,8 +54,10 @@ bool FtdiControl::getSenserData(quint16 *senserData)
     bool loopFlag = true;
     quint16 currentPoint = 0;
     quint8 error_loop = 0;
+    QDateTime startTime;
+    QDateTime stopTime;
 
-    //qDebug() << "Start:" << QTime::currentTime();
+    startTime = QDateTime::currentDateTime();
 
     FT_SetTimeouts(m_ftHandle,100,0);
     while (loopFlag)
@@ -89,7 +91,9 @@ bool FtdiControl::getSenserData(quint16 *senserData)
         tmpData = (m_RxBuffer[i*2] << 8) | m_RxBuffer[i*2+1];
         senserData[i] = tmpData;
     }
-    //qDebug() << "Stop:" << QTime::currentTime();
+
+    stopTime = QDateTime::currentDateTime();
+    //qDebug() << "timers:" << startTime.msecsTo(stopTime);
     return true;
 }
 

@@ -2,7 +2,6 @@ import QtQuick 2.9
 import QtCharts 2.2
 import QtQuick.Controls 2.3
 
-//![1]
 ChartView {
     id: chartView
     animationOptions: ChartView.NoAnimation
@@ -45,4 +44,3 @@ ChartView {
         useOpenGL: chartView.openGL
     }
 }
-//![1]

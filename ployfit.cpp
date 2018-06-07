@@ -47,11 +47,11 @@ void PloyFit::calc(quint16 *dataX, quint16 *dataY, quint16 dataLength, quint8 po
     for(quint8 i=0; i<polyN; i++)
     {
         value[i] = c->data[i];
-        qDebug()<< "Num" << i << "==" << c->data[i];
+        //qDebug()<< "Num" << i << "==" << c->data[i];
     }
-    qDebug() << "Chisqp:" << chisq;
-    qDebug() << "Q=" << Q;
-    qDebug()<<"Finish";
+    //qDebug() << "Chisqp:" << chisq;
+    //qDebug() << "Q=" << Q;
+    //qDebug()<<"Finish";
 
     //内存回收
     gsl_matrix_free(X);

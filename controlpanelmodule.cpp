@@ -21,10 +21,7 @@ quint16 ControlPanelModule::getMeasureLength()
 void ControlPanelModule::setMeasureLength(quint16 length)
 {
     m_MeasureLength = length;
-    float realLength = 0.0068321917808218426*length + 1.6360616438356983;
-    m_RealLength = QString::number(realLength, 10 , 4 );
     emit measureLengthChanged();
-    emit realLengthChanged();
 }
 
 void ControlPanelModule::setIntergral(quint8 percent)
@@ -47,6 +44,12 @@ void ControlPanelModule::setPolyValue(QString value)
 {
     m_polyValue = value;
     emit polyValueChanged();
+}
+
+void ControlPanelModule::setPolyRealValue(QString value)
+{
+    m_RealLength = value;
+    emit realLengthChanged();
 }
 
 QString ControlPanelModule::getRealLength()

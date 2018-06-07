@@ -6,7 +6,6 @@
 #include <gsl/gsl_sf_bessel.h>
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_cdf.h>
-//#include <QtMath>
 #include <math.h>
 
 

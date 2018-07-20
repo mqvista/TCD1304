@@ -53,7 +53,7 @@ Item {
         font.pointSize: 18
         from: 1000
         to: 70000
-        value: 25000
+        value: 30000
         onValueChanged: {
             ControlPanelModule.updateThresholdValue(spinBox.value);
         }

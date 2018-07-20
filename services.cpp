@@ -18,6 +18,8 @@ Services::Services(QObject *parent) : QObject(parent)
 Services::~Services()
 {
     QMetaObject::invokeMethod(Worker::Instance(), "stopAutoAcq", Qt::QueuedConnection);
+    tcpThread.quit();
+    tcpThread.wait();
     workerThread.quit();
     workerThread.wait();
 }

@@ -2,7 +2,7 @@
 
 Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilterWithoutPloy(20)
 {
-    m_ThresholdValue = 25000;
+    m_ThresholdValue = 30000;
     m_NeedToSetParams = false;
     m_saveFlag = false;
 }
@@ -191,7 +191,7 @@ bool Worker::runAlways()
     if (FtdiControl::Instance()->getSenserData(m_OriginalSenserData))
     {
         //填充CCD 激光照射不到的数据
-        fillHeadTail(820, 48000);
+        fillHeadTail(50, 48000);
 
         #ifdef USE_ORI_FILTER
             //像素滑动平均
@@ -238,7 +238,7 @@ bool Worker::runAlways()
         double calcLeft=0, calcRight=0;
         // 判断是否是垃圾数据
         // 是的话就不进行拟合
-        if(leftLength > 1 && rightLength >1 )
+        if(leftLength > 2 && rightLength >2 )
         {
             //执行拟合
             ployFit.calc(m_FilterSenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
@@ -249,7 +249,7 @@ bool Worker::runAlways()
             calcRight = ployFit.slove(tmpRightValue[2], tmpRightValue[1], tmpRightValue[0], m_ThresholdValue);
         }
         // 判断是不是到左边极限
-        if(leftLength > 1 && rightLength <= 1 && rightOffset != 0)
+        if(leftLength > 2 && rightLength <= 2 && rightOffset != 0)
         {
             //执行拟合
             ployFit.calc(m_FilterSenserData+leftOffset, dataAX, leftLength, 3, tmpLeftValue);
@@ -259,7 +259,7 @@ bool Worker::runAlways()
             calcRight = rightOffset;
         }
         // 判断是不是到右边边极限
-        if(rightLength > 1 && leftLength <= 1 && leftOffset != 0)
+        if(rightLength > 2 && leftLength <= 2 && leftOffset != 0)
         {
             //执行拟合
             ployFit.calc(m_FilterSenserData+rightOffset, dataBX, rightLength, 3, tmpRightValue);

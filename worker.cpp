@@ -216,10 +216,12 @@ bool Worker::runAlways()
         //获取左右两边的数据
         getLeftRight(m_FilterSenserData, 20000, 40000, &leftOffset, &leftLength, &rightOffset, &rightLength);
 
+        /*
         qDebug()<<"①leftOffset"<<leftOffset;
         qDebug()<<"②leftLength"<<leftLength;
         qDebug()<<"③rightOffset"<<rightOffset;
         qDebug()<<"④rightLength"<<rightLength;
+        */
 
         // 计算出X的数据
         quint16 *dataAX = new quint16[leftLength];

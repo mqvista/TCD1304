@@ -160,6 +160,7 @@ bool FtdiControl::openPort()
     {
         qDebug()<< m_ftStatus;
         qDebug() << "openfailed";
+        FT_Close(m_ftHandle);
         FT_ResetDevice(m_ftHandle);
         return false;
     }

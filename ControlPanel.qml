@@ -1,152 +1,152 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.3
 
 Item {
     id: item1
-    width: 1050
-    height: 150
 
-    Text {
-        id: name0
-        text: qsTr("Intergral:")
-        font.pointSize: 30
-        anchors.horizontalCenterOffset: -231
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -33
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
-
-    SpinBox {
-        id: spinBox0
-        width: 120
-        font.pointSize: 18
-        editable: true
-        anchors.left: name0.right
-        anchors.leftMargin: 5
-        anchors.verticalCenter: name0.verticalCenter
-        from: 1
-        to: 100
-        value: 1
-        onValueChanged: {
-            ControlPanelModule.setIntergral(spinBox0.value)
-        }
-    }
-
-
-    Text {
-        id: name
-        text: qsTr("Threshold:")
-        anchors.verticalCenterOffset: -33
-        font.pointSize: 30
-        anchors.horizontalCenterOffset: 100
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
-
-    SpinBox {
-        id: spinBox
-        editable: true
-        anchors.left: name.right
-        anchors.leftMargin: 5
-        anchors.verticalCenter: name.verticalCenter
-        font.pointSize: 18
-        from: 1000
-        to: 70000
-        value: 30000
-        onValueChanged: {
-            ControlPanelModule.updateThresholdValue(spinBox.value);
-        }
-    }
-
-    Text {
-        id: name1
-        text: qsTr("Count:")
-        anchors.verticalCenterOffset: 20
-        font.pointSize: 30
-        anchors.horizontalCenterOffset: -245
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
-
-    Label {
-        id: label
-        text: ControlPanelModule.measureLength
-        anchors.verticalCenter: name1.verticalCenter
-        anchors.left: name1.right
-        anchors.leftMargin: 5
-        font.pointSize: 30
-    }
-
-    Text {
-        id: name2
-        text: qsTr("Real Length:")
-        font.pointSize: 30
-        anchors.horizontalCenterOffset: 72
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenterOffset: 20
-    }
-
-    Label {
-        id: label2
-        text: ControlPanelModule.realLength
-        anchors.verticalCenter: name2.verticalCenter
-        anchors.left: name2.right
+    GridLayout {
+        id: gridLayout
         anchors.leftMargin: 20
-        font.pointSize: 30
-    }
+        anchors.topMargin: 20
+        anchors.rightMargin: 20
+        anchors.bottomMargin: 20
+        rows: 2
+        columns: 6
+        anchors.fill: parent
 
-    Text {
-        id: name5
-        text: qsTr("Poly Pixels:")
-        font.pointSize: 30
-        anchors.left: name2.left
-        anchors.verticalCenter: parent.verticalCenter
-        //anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenterOffset: 60
-    }
-
-    Label {
-        id: label3
-        text: ControlPanelModule.polyValue
-        anchors.verticalCenter: name5.verticalCenter
-        anchors.left: name5.right
-        anchors.leftMargin: 20
-        font.pointSize: 30
-    }
-
-
-
-    Button {
-        id: button
-        width: 150
-        text: qsTr("Close")
-        anchors.left: saveButton.left
-        font.pointSize: 30
-        focusPolicy: Qt.NoFocus
-        opacity: 0.8
-        anchors.verticalCenter: name1.verticalCenter
-        onClicked: {
-            ControlPanelModule.closeDevice()
-            Qt.quit()
+        Text {
+            id: nameIntergral
+            text: qsTr("Intergral:")
+            font.pointSize: 30
+            Layout.row: 1
+            Layout.column: 1
         }
-    }
 
-    Button {
-        id: saveButton
-        width: 150
-        text: qsTr("save RAW")
-        anchors.right: name0.left
-        anchors.rightMargin: 37
-        font.pointSize: 30
-        focusPolicy: Qt.NoFocus
-        opacity: 0.8
-        anchors.verticalCenter: name0.verticalCenter
-        onClicked: {
-            fileDialog.visible = true
-
+        SpinBox {
+            id: spinBoxIntergral
+            width: 120
+            stepSize: 1
+            font.pointSize: 18
+            editable: true
+            Layout.row: 1
+            Layout.column: 2
+            from: 1
+            to: 100
+            value: 1
+            onValueChanged: {
+                ControlPanelModule.setIntergral(spinBoxIntergral.value)
+            }
         }
+
+        Text {
+            id: nameThreshold
+            text: qsTr("Threshold:")
+            font.pointSize: 30
+            Layout.row: 1
+            Layout.column: 3
+        }
+
+        SpinBox {
+            id: spinBoxThreshold
+            editable: true
+            font.pointSize: 18
+            Layout.row: 1
+            Layout.column: 4
+            from: 1000
+            to: 70000
+            value: 30000
+            stepSize: 1000
+            onValueChanged: {
+                ControlPanelModule.updateThresholdValue(spinBoxThreshold.value);
+            }
+        }
+
+            Button {
+                id: buttonClose
+                width: 150
+                text: qsTr("Close")
+                font.pointSize: 30
+                focusPolicy: Qt.NoFocus
+                opacity: 0.8
+                Layout.row: 1
+                Layout.column: 5
+                onClicked: {
+                    ControlPanelModule.closeDevice()
+                    Qt.quit()
+                }
+            }
+
+            Button {
+                id: buttonSave
+                width: 150
+                text: qsTr("save RAW")
+                font.pointSize: 30
+                focusPolicy: Qt.NoFocus
+                opacity: 0.8
+                Layout.row: 1
+                Layout.column: 6
+                onClicked: {
+                    fileDialog.visible = true
+
+                }
+            }
+
+        Text {
+            id: nameCount
+            text: qsTr("Count:")
+            font.pointSize: 30
+            Layout.row: 2
+            Layout.column: 1
+        }
+
+        Label {
+            id: label
+            text: ControlPanelModule.measureLength
+            Layout.row: 2
+            Layout.column: 2
+            //anchors.left: nameCount.right
+            //anchors.leftMargin: 5
+            font.pointSize: 30
+        }
+
+        Text {
+            id: nameRealLength
+            text: qsTr("Real Length:")
+            font.pointSize: 30
+            Layout.row: 2
+            Layout.column: 3
+        }
+
+        Label {
+            id: labelRealLength
+            text: ControlPanelModule.realLength
+            Layout.row: 2
+            Layout.column: 4
+            //anchors.left: nameRealLength.right
+            //anchors.leftMargin: 5
+            font.pointSize: 30
+        }
+
+        Text {
+            id: namePolyPixels
+            text: qsTr("Poly Pixels:")
+            font.pointSize: 30
+            Layout.row: 2
+            Layout.column: 5
+        }
+
+        Label {
+            id: labelPolyValue
+            text: ControlPanelModule.polyValue
+            Layout.row: 2
+            Layout.column: 6
+            //anchors.left: namePolyPixels.right
+            //anchors.leftMargin: 5
+            font.pointSize: 30
+        }
+
     }
 
     FileDialog {
@@ -164,4 +164,11 @@ Item {
             console.log("Canceled")
         }
     }
+
+
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

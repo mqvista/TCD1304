@@ -61,27 +61,27 @@ void Worker::fillHeadTail(quint16 length, quint16 value)
 
 //循环数组，并从左右两边向内靠拢
 //用于计算触发的CCD长度
-void Worker::calcuLength()
-{
-    quint16 startPoint = 0 , endPoint = 0;
-    bool startFlag = true, endFlag = true;
-    for (quint16 i=0; i<3648; i++)
-    {
-        if ((m_SenserThresholdData[i] > m_SenserThresholdData[i+1]) && startFlag)
-        {
-            startPoint = i+1;
-            startFlag = false;
-        }
-        if ((m_SenserThresholdData[3647-i] > m_SenserThresholdData[3646 -i]) && endFlag)
-        {
-            endPoint = 3646 - i;
-            endFlag = false;
-        }
-        if( startFlag == false && endFlag == false)
-            break;
-    }
-    m_MeasureLength = endPoint-startPoint;
-}
+//void Worker::calcuLength()
+//{
+//    quint16 startPoint = 0 , endPoint = 0;
+//    bool startFlag = true, endFlag = true;
+//    for (quint16 i=0; i<3648; i++)
+//    {
+//        if ((m_SenserThresholdData[i] > m_SenserThresholdData[i+1]) && startFlag)
+//        {
+//            startPoint = i+1;
+//            startFlag = false;
+//        }
+//        if ((m_SenserThresholdData[3647-i] > m_SenserThresholdData[3646 -i]) && endFlag)
+//        {
+//            endPoint = 3646 - i;
+//            endFlag = false;
+//        }
+//        if( startFlag == false && endFlag == false)
+//            break;
+//    }
+//    m_MeasureLength = endPoint-startPoint;
+//}
 
 
 // 获取左右两边的数据，比较陡的左右两个边沿
@@ -98,7 +98,7 @@ void Worker::getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxC
     *rightLength = 0;
 
     bool startFlagA = true, startFlagB = true, stopFlagA = true, stopFlagB = true;
-    quint16 tmpBvalue;
+    quint16 tmpBvalue = 0;
     for (quint16 i=0; i<3648; i++)
     {
         if((senserData[i] <= maxCutValue) && startFlagA)
@@ -185,14 +185,12 @@ bool Worker::runAlways()
     {
         FtdiControl::Instance()->sendData(converyIntergralData());
     }
-
     FtdiControl::Instance()->sendData("#?data%");
     //判断数据是否采集回来
     if (FtdiControl::Instance()->getSenserData(m_OriginalSenserData))
     {
         //填充CCD 激光照射不到的数据
         fillHeadTail(50, 48000);
-
         #ifdef USE_ORI_FILTER
             //像素滑动平均
             filter.get(m_OriginalSenserData, m_FilterSenserData);
@@ -203,9 +201,9 @@ bool Worker::runAlways()
         //先做二值化
         thresholding(m_ThresholdValue, 10000, 20000);
         //取截距
-        calcuLength();
+        //calcuLength();
         //取出来的数值做滤波（直接取截距的测量）
-        m_MeasureLength = lengthFilterWithoutPloy.Get(m_MeasureLength);
+        //m_MeasureLength = lengthFilterWithoutPloy.Get(m_MeasureLength);
 
 
 
@@ -276,8 +274,8 @@ bool Worker::runAlways()
         m_calcPolyLength = calcRight-calcLeft;
         // 窗口滤波
         #ifdef USE_AFTER_FILTER
-            //m_calcPolyLengthFilter = uWindowFilter.Get(m_calcPolyLength);
-            m_calcPolyLengthFilter = m_SortingFilter.get(m_calcPolyLength);
+            m_calcPolyLengthFilter = uWindowFilter.Get(m_calcPolyLength);
+            //m_calcPolyLengthFilter = m_SortingFilter.get(m_calcPolyLength);
         #else
             m_calcPolyLengthFilter = m_calcPolyLength;
         #endif
@@ -297,7 +295,7 @@ bool Worker::runAlways()
         m_calcPoluRealLength = converyToPolyRealLength(m_calcPolyLengthFilter);
 
         // 发送无拟合的单纯截距的数据
-        emit sendMeasureLength(m_MeasureLength);
+        //emit sendMeasureLength(m_MeasureLength);
         // 丢给界面拟合处理过后的数据
         emit sendPolyValue(QString::number(m_calcPolyLengthFilter, 'f', 2));
         // 丢给界面拟合处理过后的实际长度数据
@@ -307,6 +305,8 @@ bool Worker::runAlways()
 
         //
         emit SendDataToTCPClient("#PixelLength:" + QString::number(m_calcPolyLengthFilter, 'f', 2) + " #PolyRealLength:" + QString::number(m_calcPoluRealLength, 'f', 4) + "\n");
+
+
         return true;
     }
     return false;

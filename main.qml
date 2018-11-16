@@ -15,6 +15,7 @@ Window {
         anchors.bottom: scopeView.top
         anchors.right: parent.right
         anchors.left: parent.left
+        height: window.height * 0.2
     }
 
     ScopeView {

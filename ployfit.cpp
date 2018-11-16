@@ -37,7 +37,7 @@ void PloyFit::calc(quint16 *dataX, quint16 *dataY, quint16 dataLength, quint8 po
     }
     //准备工作空间, 参数一为数据长度， 二为拟合次数
     gsl_multifit_linear_workspace *work_space = gsl_multifit_linear_alloc(dataLength, polyN);
-    quint8 status =  gsl_multifit_linear(X, y, c, cov, &chisq, work_space);
+    int status =  gsl_multifit_linear(X, y, c, cov, &chisq, work_space);
     if (status)
     {
         qDebug() << "GSL Error:" << status;

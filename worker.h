@@ -54,7 +54,7 @@ private:
     quint16 m_FilterSenserData[3648];
     quint16 m_SenserThresholdData[3648];
     quint16 m_ThresholdValue;
-    quint16 m_MeasureLength;
+    quint32 m_MeasureLength;
     Filter filter;
     UWindowFilter<double> uWindowFilter;
     UWindowFilter<quint32> lengthFilterWithoutPloy;

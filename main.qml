@@ -12,10 +12,9 @@ Window {
     ControlPanel {
         id: controlPanel
         anchors.top: parent.top
-        anchors.bottom: scopeView.top
         anchors.right: parent.right
         anchors.left: parent.left
-        height: window.height * 0.2
+        implicitHeight: 120
     }
 
     ScopeView {

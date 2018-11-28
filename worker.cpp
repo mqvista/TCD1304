@@ -162,21 +162,6 @@ bool Worker::ftdiInit()
     return true;
 }
 
-bool Worker::runOnce()
-{
-    FtdiControl::Instance()->sendData("#?data%");
-    quint16 dts[3648];
-    if (FtdiControl::Instance()->getSenserData(dts))
-    {
-        qDebug() << dts;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 //循环采集，和runOnce一样其实
 bool Worker::runAlways()
 {
@@ -341,6 +326,7 @@ void Worker::startAutoAcq(quint16 time)
 void Worker::stopAutoAcq()
 {
     m_acqTimer->stop();
+    delete m_acqTimer;
 }
 
 bool Worker::sendData(QString strData)

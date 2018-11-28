@@ -20,7 +20,6 @@ public:
     static Worker *Instance();
     ~Worker();
     Q_INVOKABLE bool ftdiInit();
-    Q_INVOKABLE bool runOnce();
     Q_INVOKABLE void startAutoAcq(quint16 time);
     Q_INVOKABLE void stopAutoAcq();
     Q_INVOKABLE bool sendData(QString strData);

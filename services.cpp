@@ -7,9 +7,8 @@ Services::Services(QObject *parent) : QObject(parent)
     m_tcpServer.moveToThread(&tcpThread);
     tcpThread.start();
 
+    // TODO 移动到work去处理
     QMetaObject::invokeMethod(Worker::Instance(), "sendData", Qt::QueuedConnection, Q_ARG(QString, "#CCDInt:001%"));
-
-
     QMetaObject::invokeMethod(Worker::Instance(), "startAutoAcq", Qt::QueuedConnection, Q_ARG(quint16, 100));
 
     QObject::connect(Worker::Instance(), &Worker::SendDataToTCPClient, &m_tcpServer, &TCPServer::sendNewData);

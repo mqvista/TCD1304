@@ -46,9 +46,7 @@ bool FtdiControl::getSenserData(quint16 *senserData)
 {
     if (! m_isOpened)
     {
-        if (!openPort())
-            return false;
-        //openPort();
+        return false;
     }
 
     bool loopFlag = true;
@@ -57,7 +55,7 @@ bool FtdiControl::getSenserData(quint16 *senserData)
     QDateTime startTime;
     QDateTime stopTime;
 
-    startTime = QDateTime::currentDateTime();
+    //startTime = QDateTime::currentDateTime();
 
     FT_SetTimeouts(m_ftHandle,100,0);
     while (loopFlag)
@@ -92,7 +90,7 @@ bool FtdiControl::getSenserData(quint16 *senserData)
         senserData[i] = tmpData;
     }
 
-    stopTime = QDateTime::currentDateTime();
+    //stopTime = QDateTime::currentDateTime();
     //qDebug() << "timers:" << startTime.msecsTo(stopTime);
     return true;
 }
@@ -101,7 +99,7 @@ bool FtdiControl::sendData(QString strData)
 {
     if (! m_isOpened)
     {
-        openPort();
+        return false;
     }
     memset(m_TxBuffer, 0, sizeof(m_TxBuffer));
     for (quint16 i = 0; i < strData.size(); i++) {
@@ -118,7 +116,7 @@ bool FtdiControl::init()
 {
     m_ftStatus = FT_ResetDevice(m_ftHandle);
     if (m_ftStatus != FT_OK) {
-        qDebug()<< "ftdi init error 2";
+        qDebug()<< "FT_ResetDevice error";
         return false;
     }
     m_ftStatus = FT_SetBaudRate(m_ftHandle, FT_BAUD_921600);
@@ -150,24 +148,19 @@ bool FtdiControl::init()
     return true;
 }
 
-bool FtdiControl::openPort()
+bool FtdiControl::openPort(int deviceNum)
 {
-    FT_Close(&m_ftHandle);
     m_isOpened = false;
-
-    m_ftStatus = FT_Open(0, &m_ftHandle);
+    m_ftStatus = FT_Open(deviceNum, &m_ftHandle);
     if (m_ftStatus != FT_OK)
     {
         qDebug()<< m_ftStatus;
         qDebug() << "openfailed";
-        FT_Close(m_ftHandle);
-        FT_ResetDevice(m_ftHandle);
         return false;
     }
     else
     {
         m_isOpened = true;
-        init();
         return true;
     }
 }

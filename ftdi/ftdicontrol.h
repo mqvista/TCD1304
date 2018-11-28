@@ -16,7 +16,7 @@ public:
     bool getSenserData(quint16 *senserData);
     bool sendData(QString strData);
     bool init();
-    bool openPort();
+    bool openPort(int deviceNum=0);
     bool colsePort();
 
 signals:

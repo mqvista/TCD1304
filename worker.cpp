@@ -1,10 +1,12 @@
-#include "worker.h"
+﻿#include "worker.h"
 
 Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilterWithoutPloy(20)
 {
-    m_ThresholdValue = 30000;
+    m_ThresholdValue = 46000;
     m_NeedToSetParams = false;
     m_saveFlag = false;
+    m_isOpen = false;
+    m_IntergralValue = 1;
 }
 
 double Worker::converyToPolyRealLength(double pixelLength)
@@ -153,27 +155,63 @@ Worker *Worker::Instance()
 
 Worker::~Worker()
 {
-    m_acqTimer->stop();
+    if (m_isOpen)
+    {
+        closeDevice();
+    }
 }
 
-bool Worker::ftdiInit()
+bool Worker::openDevice()
 {
-    FtdiControl::Instance()->init();
+    if (FtdiControl::Instance()->openPort())
+    {
+        m_isOpen = true;
+    }
+    else
+    {
+        return false;
+    }
+    if (!FtdiControl::Instance()->init())
+    {
+        m_isOpen = false;
+        FtdiControl::Instance()->colsePort();
+        return false;
+    }
+    if (!FtdiControl::Instance()->sendData(converyIntergralData()))
+    {
+        m_isOpen = false;
+        FtdiControl::Instance()->colsePort();
+        return false;
+    }
+    startAutoAcq(100);
     return true;
 }
+
+bool Worker::closeDevice()
+{
+    stopAutoAcq();
+    m_isOpen = false;
+    FtdiControl::Instance()->colsePort();
+    return true;
+}
+
 
 //循环采集，和runOnce一样其实
 bool Worker::runAlways()
 {
+    QDateTime startTime, stopTime;
+
     //先看看有没有需要设置的参数在任务队列里面
     if (m_NeedToSetParams)
     {
         FtdiControl::Instance()->sendData(converyIntergralData());
     }
     FtdiControl::Instance()->sendData("#?data%");
+
     //判断数据是否采集回来
     if (FtdiControl::Instance()->getSenserData(m_OriginalSenserData))
     {
+        startTime = QDateTime::currentDateTime();
         //填充CCD 激光照射不到的数据
         fillHeadTail(50, 48000);
         #ifdef USE_ORI_FILTER
@@ -185,13 +223,6 @@ bool Worker::runAlways()
 
         //先做二值化
         thresholding(m_ThresholdValue, 10000, 20000);
-        //取截距
-        //calcuLength();
-        //取出来的数值做滤波（直接取截距的测量）
-        //m_MeasureLength = lengthFilterWithoutPloy.Get(m_MeasureLength);
-
-
-
 
         ///////////
         //测试用拟合
@@ -254,7 +285,6 @@ bool Worker::runAlways()
             calcLeft = leftOffset;
         }
 
-
         // 因为拟合的是左右两个边，所以需要相减求出大小
         m_calcPolyLength = calcRight-calcLeft;
         // 窗口滤波
@@ -287,11 +317,11 @@ bool Worker::runAlways()
         emit sendPolyRealValue(QString::number(m_calcPoluRealLength, 'f', 4));
         // 丢给界面波形
         emit getNewData(m_FilterSenserData, m_SenserThresholdData, 3648);
-
-        //
         emit SendDataToTCPClient("#PixelLength:" + QString::number(m_calcPolyLengthFilter, 'f', 2) + " #PolyRealLength:" + QString::number(m_calcPoluRealLength, 'f', 4) + "\n");
 
-
+        // show process time
+        stopTime = QDateTime::currentDateTime();
+        qDebug() << "timeProcess:" << startTime.msecsTo(stopTime);
         return true;
     }
     return false;

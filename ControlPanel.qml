@@ -1,4 +1,4 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
@@ -74,7 +74,7 @@ Item {
                 font.pointSize: 16
                 from: 1000
                 to: 70000
-                value: 30000
+                value: 46000
                 stepSize: 1000
                 onValueChanged: {
                     ControlPanelModule.updateThresholdValue(spinBoxThreshold.value);
@@ -92,7 +92,6 @@ Item {
             opacity: 0.8
             onClicked: {
                 ControlPanelModule.closeDevice()
-                Qt.quit()
             }
         }
 
@@ -104,6 +103,7 @@ Item {
             focusPolicy: Qt.NoFocus
             opacity: 0.8
             onClicked: {
+                ControlPanelModule.openDevice();
             }
         }
 

@@ -1,4 +1,4 @@
-#include "controlpanelmodule.h"
+﻿#include "controlpanelmodule.h"
 
 ControlPanelModule::ControlPanelModule(QObject *parent) : QObject(parent)
 {
@@ -29,9 +29,14 @@ void ControlPanelModule::setIntergral(quint8 percent)
     QMetaObject::invokeMethod(Worker::Instance(), "setIntergral", Qt::QueuedConnection, Q_ARG(quint8, percent));
 }
 
+void ControlPanelModule::openDevice()
+{
+    QMetaObject::invokeMethod(Worker::Instance(), "openDevice", Qt::QueuedConnection);
+}
+
 void ControlPanelModule::closeDevice()
 {
-    QMetaObject::invokeMethod(Worker::Instance(), "stopAutoAcq", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(Worker::Instance(), "closeDevice", Qt::QueuedConnection);
 }
 
 //保存原始数据

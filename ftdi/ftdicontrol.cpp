@@ -1,4 +1,4 @@
-#include "ftdicontrol.h"
+﻿#include "ftdicontrol.h"
 
 FtdiControl* FtdiControl::Instance()
 {
@@ -51,31 +51,30 @@ bool FtdiControl::getSenserData(quint16 *senserData)
 
     bool loopFlag = true;
     quint16 currentPoint = 0;
-    quint8 error_loop = 0;
     QDateTime startTime;
     QDateTime stopTime;
 
-    //startTime = QDateTime::currentDateTime();
+    startTime = QDateTime::currentDateTime();
 
     FT_SetTimeouts(m_ftHandle,100,0);
     while (loopFlag)
     {
         m_ftStatus = FT_Read(m_ftHandle, (quint8*)(m_RxBuffer+currentPoint), 128, &m_Bytereceived);
-        if ((m_ftStatus == FT_OK) && (m_Bytereceived >0))
+        if (m_ftStatus != FT_OK)
         {
-            currentPoint += m_Bytereceived;
+            return false;
+        }
+        else if (m_Bytereceived !=128)
+        {
+            //error_loop++;
+            FT_Purge(m_ftHandle, FT_PURGE_TX | FT_PURGE_RX);
+            qDebug() << "max loop times error";
+            return false;
         }
         else
         {
-            qDebug() << "errors + 1";
-            error_loop++;
-        }
 
-        if (error_loop >= 10)
-        {
-            qDebug() << "max loop times error";
-            m_isOpened = false;
-            return false;
+            currentPoint += m_Bytereceived;
         }
         if (currentPoint >= 7296)
         {
@@ -90,8 +89,8 @@ bool FtdiControl::getSenserData(quint16 *senserData)
         senserData[i] = tmpData;
     }
 
-    //stopTime = QDateTime::currentDateTime();
-    //qDebug() << "timers:" << startTime.msecsTo(stopTime);
+    stopTime = QDateTime::currentDateTime();
+    qDebug() << "timers:" << startTime.msecsTo(stopTime);
     return true;
 }
 
@@ -119,7 +118,7 @@ bool FtdiControl::init()
         qDebug()<< "FT_ResetDevice error";
         return false;
     }
-    m_ftStatus = FT_SetBaudRate(m_ftHandle, FT_BAUD_921600);
+    m_ftStatus = FT_SetBaudRate(m_ftHandle, 1400000);
     if (m_ftStatus != FT_OK) {
         qDebug()<< "ftdi init error 3";
         return false;

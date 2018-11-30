@@ -1,4 +1,4 @@
-#ifndef CONTROLPANELMODULE_H
+﻿#ifndef CONTROLPANELMODULE_H
 #define CONTROLPANELMODULE_H
 
 #include <QObject>
@@ -16,6 +16,7 @@ public:
     Q_INVOKABLE void updateThresholdValue(quint16 value);
     Q_INVOKABLE void setMeasureLength(quint16 length);
     Q_INVOKABLE void setIntergral(quint8 percent);
+    Q_INVOKABLE void openDevice();
     Q_INVOKABLE void closeDevice();
     Q_INVOKABLE void saveData(QString dataUrl);
     Q_INVOKABLE void setPolyValue(QString value);

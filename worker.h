@@ -1,9 +1,10 @@
-#ifndef WORKER_H
+﻿#ifndef WORKER_H
 #define WORKER_H
 
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
+#include <QDateTime>
 #include <QThread>
 #include "ftdi/ftdicontrol.h"
 #include "filter.h"
@@ -19,7 +20,9 @@ class Worker : public QObject
 public:
     static Worker *Instance();
     ~Worker();
-    Q_INVOKABLE bool ftdiInit();
+    Q_INVOKABLE bool openDevice();
+    Q_INVOKABLE bool closeDevice();
+
     Q_INVOKABLE void startAutoAcq(quint16 time);
     Q_INVOKABLE void stopAutoAcq();
     Q_INVOKABLE bool sendData(QString strData);
@@ -71,6 +74,8 @@ private:
     double m_calcPoluRealLength;
 
     double converyToPolyRealLength(double pixelLength);
+
+    bool m_isOpen;
 };
 
 #endif // WORKER_H

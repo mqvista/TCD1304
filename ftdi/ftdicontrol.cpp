@@ -123,7 +123,7 @@ bool FtdiControl::init()
         qDebug()<< "ftdi init error 3";
         return false;
     }
-    m_ftStatus = FT_SetDataCharacteristics(m_ftHandle, FT_BITS_8 + FT_BITS_7, FT_STOP_BITS_1, FT_PARITY_NONE);
+    m_ftStatus = FT_SetDataCharacteristics(m_ftHandle, FT_BITS_8, FT_STOP_BITS_1, FT_PARITY_NONE);
     if (m_ftStatus != FT_OK) {
         qDebug()<< "ftdi init error 4";
         return false;

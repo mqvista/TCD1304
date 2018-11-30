@@ -2,7 +2,7 @@
 
 ControlPanelModule::ControlPanelModule(QObject *parent) : QObject(parent)
 {
-
+    m_DeviceStatus = false;
 }
 
 //从界面更新阈值
@@ -65,6 +65,17 @@ QString ControlPanelModule::getRealLength()
 QString ControlPanelModule::getPolyValue()
 {
     return m_polyValue;
+}
+
+bool ControlPanelModule::getDeviceStatus()
+{
+    return m_DeviceStatus;
+}
+
+void ControlPanelModule::getDeviceOpenStatus(bool status)
+{
+    m_DeviceStatus = status;
+    emit deviceStatusChanged();
 }
 
 

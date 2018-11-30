@@ -74,8 +74,6 @@ private:
     double m_calcPoluRealLength;
 
     double converyToPolyRealLength(double pixelLength);
-
-    bool m_isOpen;
 };
 
 #endif // WORKER_H

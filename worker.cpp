@@ -5,7 +5,6 @@ Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilt
     m_ThresholdValue = 46000;
     m_NeedToSetParams = false;
     m_saveFlag = false;
-    m_isOpen = false;
     m_IntergralValue = 1;
 }
 
@@ -155,7 +154,7 @@ Worker *Worker::Instance()
 
 Worker::~Worker()
 {
-    if (m_isOpen)
+    if (FtdiControl::Instance()->getOpenStatus())
     {
         closeDevice();
     }
@@ -163,23 +162,17 @@ Worker::~Worker()
 
 bool Worker::openDevice()
 {
-    if (FtdiControl::Instance()->openPort())
-    {
-        m_isOpen = true;
-    }
-    else
+    if (!FtdiControl::Instance()->openPort())
     {
         return false;
     }
     if (!FtdiControl::Instance()->init())
     {
-        m_isOpen = false;
         FtdiControl::Instance()->colsePort();
         return false;
     }
     if (!FtdiControl::Instance()->sendData(converyIntergralData()))
     {
-        m_isOpen = false;
         FtdiControl::Instance()->colsePort();
         return false;
     }
@@ -190,7 +183,6 @@ bool Worker::openDevice()
 bool Worker::closeDevice()
 {
     stopAutoAcq();
-    m_isOpen = false;
     FtdiControl::Instance()->colsePort();
     return true;
 }

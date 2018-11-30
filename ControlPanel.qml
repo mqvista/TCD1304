@@ -90,6 +90,7 @@ Item {
             font.pointSize: 18
             focusPolicy: Qt.NoFocus
             opacity: 0.8
+            enabled: !buttonOpen.enabled
             onClicked: {
                 ControlPanelModule.closeDevice()
             }
@@ -98,6 +99,7 @@ Item {
         Button {
             id: buttonOpen
             width: 120
+            enabled: !ControlPanelModule.deviceStatus
             text: qsTr("Open")
             font.pointSize: 18
             focusPolicy: Qt.NoFocus

@@ -160,6 +160,7 @@ bool FtdiControl::openPort(int deviceNum)
     else
     {
         m_isOpened = true;
+        emit deviceOpenStatusChanged(true);
         return true;
     }
 }
@@ -167,6 +168,12 @@ bool FtdiControl::openPort(int deviceNum)
 bool FtdiControl::colsePort()
 {
     m_isOpened = false;
+    emit deviceOpenStatusChanged(false);
     FT_Close(m_ftHandle);
     return true;
+}
+
+bool FtdiControl::getOpenStatus()
+{
+    return m_isOpened;
 }

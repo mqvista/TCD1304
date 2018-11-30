@@ -1,4 +1,4 @@
-#ifndef FTDICONTROL_H
+﻿#ifndef FTDICONTROL_H
 #define FTDICONTROL_H
 
 #include <QObject>
@@ -18,8 +18,10 @@ public:
     bool init();
     bool openPort(int deviceNum=0);
     bool colsePort();
+    bool getOpenStatus();
 
 signals:
+    void deviceOpenStatusChanged(bool status);
 
 private:
     FT_STATUS m_ftStatus;

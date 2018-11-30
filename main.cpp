@@ -1,4 +1,4 @@
-#include <QGuiApplication>
+﻿#include <QGuiApplication>
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     QObject::connect(Worker::Instance(), &Worker::getNewData, &chartSource, &ChartSource::processFromWorker);
     ControlPanelModule controlPanelModule;
     engine.rootContext()->setContextProperty("ControlPanelModule", &controlPanelModule);
+    QObject::connect(FtdiControl::Instance(), &FtdiControl::deviceOpenStatusChanged, &controlPanelModule, &ControlPanelModule::getDeviceOpenStatus);
     QObject::connect(Worker::Instance(), &Worker::sendMeasureLength, &controlPanelModule, &ControlPanelModule::setMeasureLength);
     QObject::connect(Worker::Instance(), &Worker::sendPolyValue, &controlPanelModule, &ControlPanelModule::setPolyValue);
     QObject::connect(Worker::Instance(), &Worker::sendPolyRealValue, &controlPanelModule, &ControlPanelModule::setPolyRealValue);

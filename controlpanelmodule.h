@@ -11,6 +11,7 @@ class ControlPanelModule : public QObject
     Q_PROPERTY(quint16 measureLength READ getMeasureLength WRITE setMeasureLength NOTIFY measureLengthChanged)
     Q_PROPERTY(QString realLength READ getRealLength NOTIFY realLengthChanged)
     Q_PROPERTY(QString polyValue READ getPolyValue WRITE setPolyValue NOTIFY polyValueChanged)
+    Q_PROPERTY(bool deviceStatus READ getDeviceStatus NOTIFY deviceStatusChanged)
 public:
     explicit ControlPanelModule(QObject *parent = nullptr);
     Q_INVOKABLE void updateThresholdValue(quint16 value);
@@ -24,17 +25,22 @@ public:
     quint16 getMeasureLength();
     QString getRealLength();
     QString getPolyValue();
+    bool getDeviceStatus();
 
 signals:
     void measureLengthChanged();
     void realLengthChanged();
     void polyValueChanged();
+    void deviceStatusChanged();
 
+public slots:
+    void getDeviceOpenStatus(bool status);
 
 private:
     quint16 m_MeasureLength;
     QString m_RealLength;
     QString m_polyValue;
+    bool m_DeviceStatus;
 };
 
 #endif // CONTROLPANELMODULE_H

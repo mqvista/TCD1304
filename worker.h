@@ -33,7 +33,7 @@ public:
     Q_INVOKABLE void setThresholdValue(const quint16 &value);
     Q_INVOKABLE void setIntergral(quint8 value);
     QString converyIntergralData();
-    void calcuLength();
+    void calcuLengthWithIntercept();
     void fillHeadTail(quint16 length, quint16 value);
     void getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxCutValue, quint16* leftOffset, quint16* leftLength, quint16* rightOffset, quint16* rightLength);
 

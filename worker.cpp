@@ -62,27 +62,27 @@ void Worker::fillHeadTail(quint16 length, quint16 value)
 
 //循环数组，并从左右两边向内靠拢
 //用于计算触发的CCD长度
-//void Worker::calcuLength()
-//{
-//    quint16 startPoint = 0 , endPoint = 0;
-//    bool startFlag = true, endFlag = true;
-//    for (quint16 i=0; i<3648; i++)
-//    {
-//        if ((m_SenserThresholdData[i] > m_SenserThresholdData[i+1]) && startFlag)
-//        {
-//            startPoint = i+1;
-//            startFlag = false;
-//        }
-//        if ((m_SenserThresholdData[3647-i] > m_SenserThresholdData[3646 -i]) && endFlag)
-//        {
-//            endPoint = 3646 - i;
-//            endFlag = false;
-//        }
-//        if( startFlag == false && endFlag == false)
-//            break;
-//    }
-//    m_MeasureLength = endPoint-startPoint;
-//}
+void Worker::calcuLengthWithIntercept()
+{
+    quint16 startPoint = 0 , endPoint = 0;
+    bool startFlag = true, endFlag = true;
+    for (quint16 i=0; i<3648; i++)
+    {
+        if ((m_SenserThresholdData[i] > m_SenserThresholdData[i+1]) && startFlag)
+        {
+            startPoint = i+1;
+            startFlag = false;
+        }
+        if ((m_SenserThresholdData[3647-i] > m_SenserThresholdData[3646 -i]) && endFlag)
+        {
+            endPoint = 3646 - i;
+            endFlag = false;
+        }
+        if( startFlag == false && endFlag == false)
+            break;
+    }
+    m_MeasureLength = endPoint-startPoint;
+}
 
 
 // 获取左右两边的数据，比较陡的左右两个边沿
@@ -215,11 +215,16 @@ bool Worker::runAlways()
 
         //先做二值化
         thresholding(m_ThresholdValue, 10000, 20000);
+        // 直接取截距求像素
+        calcuLengthWithIntercept();
+        qDebug() << "取截距的像素:" << m_MeasureLength << "计算出的长度:" << m_MeasureLength * 8;
 
         ///////////
         //测试用拟合
         quint16 leftOffset, leftLength, rightOffset, rightLength;
         //获取左右两边的数据
+        // 需要注意 min 和 max cutValue
+        // 20000 40000
         getLeftRight(m_FilterSenserData, 20000, 40000, &leftOffset, &leftLength, &rightOffset, &rightLength);
 
         /*

@@ -166,6 +166,15 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pointSize: 18
             }
+
+            Label {
+                id: nameUnit
+                text: "mm"
+                anchors.left: nameRealLength.right
+                anchors.leftMargin: 100
+                anchors.verticalCenter: parent.verticalCenter
+                font.pointSize: 18
+            }
         }
 
         Item {

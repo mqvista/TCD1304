@@ -2,4 +2,7 @@
 
 Environment Qt 5.11
 IDE Qt creator
-Compilers MinGW 5.3
+Compilers:{
+  Windows: msvc2015 x86
+  Mac: Clang
+}

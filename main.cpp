@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     QObject::connect(Worker::Instance(), &Worker::sendMeasureLength, &controlPanelModule, &ControlPanelModule::setMeasureLength);
     QObject::connect(Worker::Instance(), &Worker::sendPolyValue, &controlPanelModule, &ControlPanelModule::setPolyValue);
     QObject::connect(Worker::Instance(), &Worker::sendPolyRealValue, &controlPanelModule, &ControlPanelModule::setPolyRealValue);
+    QObject::connect(Worker::Instance(), &Worker::sendRelativelyData, &controlPanelModule, &ControlPanelModule::setRelativelyLength);
 
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

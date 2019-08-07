@@ -1,4 +1,4 @@
-﻿import QtQuick 2.0
+﻿import QtQuick 2.10
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
@@ -199,6 +199,50 @@ Item {
                 font.pointSize: 18
             }
         }
+
+        Item {
+            id: item3_1
+            Layout.columnSpan: 2
+            implicitWidth: 220
+            implicitHeight: nameRValue.height
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+
+            Text {
+                id: nameRValue
+                text: qsTr("RValue:")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pointSize: 80
+            }
+
+            Label {
+                id: labelRValue
+                text: ControlPanelModule.relativelyLength
+                anchors.left: nameRValue.right
+                anchors.leftMargin: 5
+                anchors.verticalCenter: parent.verticalCenter
+                font.pointSize: 80
+            }
+
+            Button {
+                id: buttonClean
+                anchors.left: nameRValue.right
+                anchors.leftMargin: 300
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Reset"
+                font.pointSize: 19
+                onClicked: {
+                    ControlPanelModule.setResetRelativelyValue();
+                    if (text == "Reset")
+                    {
+                        text = "Resume"
+                    }
+                    else if (text == "Resume")
+                    {
+                        text = "Reset"
+                    }
+                }
+            }
+        }
     }
 
     FileDialog {
@@ -216,11 +260,9 @@ Item {
             console.log("Canceled")
         }
     }
-
-
-
-
 }
+
+
 
 /*##^## Designer {
     D{i:0;autoSize:true;height:480;width:640}

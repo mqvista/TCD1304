@@ -14,7 +14,7 @@ Window {
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.left: parent.left
-        implicitHeight: 120
+        implicitHeight: 200
     }
 
     ScopeView {

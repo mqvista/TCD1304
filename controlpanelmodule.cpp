@@ -57,6 +57,13 @@ void ControlPanelModule::setPolyRealValue(QString value)
     emit realLengthChanged();
 }
 
+void ControlPanelModule::setRelativelyLength(QString value)
+{
+    qDebug() << "oooo:" << value;
+    m_RelativeLength = value;
+    emit relativelyLengthChanged();
+}
+
 QString ControlPanelModule::getRealLength()
 {
     return m_RealLength;
@@ -70,6 +77,16 @@ QString ControlPanelModule::getPolyValue()
 bool ControlPanelModule::getDeviceStatus()
 {
     return m_DeviceStatus;
+}
+
+QString ControlPanelModule::getRelativeLength()
+{
+    return m_RelativeLength;
+}
+
+void ControlPanelModule::setResetRelativelyValue()
+{
+    QMetaObject::invokeMethod(Worker::Instance(), &Worker::setResetRelativelyValue, Qt::QueuedConnection);
 }
 
 void ControlPanelModule::getDeviceOpenStatus(bool status)

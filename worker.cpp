@@ -6,6 +6,8 @@ Worker::Worker(QObject *parent) : QObject(parent), uWindowFilter(20), lengthFilt
     m_NeedToSetParams = false;
     m_saveFlag = false;
     m_IntergralValue = 1;
+    m_relativelySubValue = 0;
+    m_relativelyFlag = false;
 }
 
 double Worker::converyToPolyRealLength(double pixelLength)
@@ -135,6 +137,19 @@ void Worker::getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxC
         *leftLength = 0;
         *rightOffset = 0;
         *rightLength = 0;
+    }
+}
+
+void Worker::setResetRelativelyValue()
+{
+    if (m_relativelyFlag)
+    {
+        m_relativelySubValue = 0;
+        m_relativelyFlag = false;
+    }
+    else {
+        m_relativelySubValue = 0 - m_calcPoluRealLength;
+        m_relativelyFlag = true;
     }
 }
 
@@ -312,6 +327,8 @@ bool Worker::runAlways()
         emit sendPolyValue(QString::number(m_calcPolyLengthFilter, 'f', 2));
         // 丢给界面拟合处理过后的实际长度数据
         emit sendPolyRealValue(QString::number(m_calcPoluRealLength, 'f', 4));
+        // 丢给界面可重置的数据
+        emit sendRelativelyData(QString::number((m_calcPoluRealLength + m_relativelySubValue), 'f', 2));
         // 丢给界面波形
         emit getNewData(m_FilterSenserData, m_SenserThresholdData, 3648);
         emit SendDataToTCPClient("#PixelLength:" + QString::number(m_calcPolyLengthFilter, 'f', 2) + " #PolyRealLength:" + QString::number(m_calcPoluRealLength, 'f', 4) + "\n");

@@ -36,6 +36,7 @@ public:
     void calcuLengthWithIntercept();
     void fillHeadTail(quint16 length, quint16 value);
     void getLeftRight(quint16* senserData, quint16 minCutValue, quint16 maxCutValue, quint16* leftOffset, quint16* leftLength, quint16* rightOffset, quint16* rightLength);
+    Q_INVOKABLE void setResetRelativelyValue();
 
 
 signals:
@@ -47,6 +48,8 @@ signals:
     void sendPolyRealValue(QString value);
     // 发送数据给 tcp client
     void SendDataToTCPClient(QString value);
+    // 发送可重置的数据给界面
+    void sendRelativelyData(QString value);
 
 private:
     explicit Worker(QObject *parent = nullptr);
@@ -72,6 +75,9 @@ private:
     double m_calcPolyLength;
     double m_calcPolyLengthFilter;
     double m_calcPoluRealLength;
+    // rValue
+    double m_relativelySubValue;
+    bool m_relativelyFlag;
 
     double converyToPolyRealLength(double pixelLength);
 };
